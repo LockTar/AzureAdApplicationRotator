@@ -1,4 +1,4 @@
-# AzureAdApplicationRotator
+# Azure Ad Application Rotator
 Rotate your Azure AD Application (App Registration) keys periodically to an Azure KeyVault.
 
 ## Getting started
