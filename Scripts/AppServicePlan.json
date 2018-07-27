@@ -1,0 +1,46 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appServicePlanName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service plan to use for hosting the web app."
+            }
+        },
+        "location": {
+            "type": "string"
+        },
+        "family": {
+            "type": "string"
+        },
+        "pricingTier": {
+            "type": "string"
+        },
+        "instances": {
+            "type": "int",
+            "defaultValue": 1,
+            "metadata": {
+                "description": "Defines the number of instances that will be allocated to the app service plan."
+            }
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2016-09-01",
+            "name": "[parameters('appServicePlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[parameters('location')]",
+            "properties": {
+                "name": "[parameters('appServicePlanName')]"
+            },
+            "sku": {
+                "name" : "[concat(parameters('family'),parameters('pricingTier'))]",
+                "tier": "Dynamic",
+                "size": "[concat(parameters('family'),parameters('pricingTier'))]",
+                "family": "[parameters('family')]",
+                "capacity": "[parameters('instances')]"
+            }
+        }
+    ]
+}

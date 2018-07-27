@@ -1,0 +1,32 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "applicationInsightsName": {
+        "type": "string",
+        "metadata": {
+          "description": "Application Insight Name"
+        }
+      },
+      "location": {
+        "type": "string"
+      }
+    },
+    "resources": [
+      {
+        "apiVersion": "2014-04-01",
+        "name": "[parameters('applicationInsightsName')]",
+        "type": "Microsoft.Insights/components",
+        "location": "[parameters('location')]",
+        "properties": {
+          "applicationId": "[parameters('applicationInsightsName')]"
+        }
+      }
+    ],
+    "outputs": {
+      "InstrumentationKey": {
+        "type": "string",
+        "value": "[reference(resourceId('Microsoft.Insights/components', parameters('applicationInsightsName')),'2014-04-01').InstrumentationKey]"
+      }
+    }
+  }
