@@ -3,6 +3,7 @@ $environment = "Test"
 $location = "westeurope";
 
 $resourceGroupName = "$applicationName-$environment"
+$keyVaultName = $applicationName + $environment
 $appServicePlanName = $applicationName + "Plan"
 $functionAppName = $applicationName + $environment
 $storageAccountName = $($applicationName + $environment).ToLowerInvariant()
@@ -13,6 +14,19 @@ $resourceGroup = Get-AzureRmResourceGroup -Name $resourceGroupName -Location $lo
 if (!$resourceGroup) {
     New-AzureRmResourceGroup -Name $resourceGroupName -Location $location
 }
+
+
+# KeyVault
+$keyVaultTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\KeyVault.json"
+$keyVaultDeploymentName = ((Get-ChildItem $keyVaultTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
+
+.\Create-AppServicePlan.ps1 `
+    -ResourceGroupName $resourceGroupName `
+    -KeyVaultName $keyVaultName `
+    -Location $location `
+    -TemplateFile $keyVaultTemplateFile `
+    -DeploymentName $keyVaultDeploymentName
+
 
 # App Service Plan
 $aspTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\AppServicePlan.json"

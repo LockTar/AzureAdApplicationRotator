@@ -35,12 +35,12 @@ $parametersARM.Add("appInsightsName", $ApplicationInsightsName)
 Write-Verbose "Deploy ARM template with deploymentname $DeploymentName"
 
 New-AzureRmResourceGroupDeployment -Name $DeploymentName `
-                                    -ResourceGroupName $ResourceGroupName `
-                                    -TemplateFile $TemplateFile `
-                                    -TemplateParameterObject $parametersARM `
-                                    -Force `
-                                    -Verbose `
-                                    -ErrorVariable ErrorMessages
+    -ResourceGroupName $ResourceGroupName `
+    -TemplateFile $TemplateFile `
+    -TemplateParameterObject $parametersARM `
+    -Force `
+    -Verbose `
+    -ErrorVariable ErrorMessages
 
 Write-Verbose "Deployed ARM template, checking for errors..."
 if ($ErrorMessages) {
