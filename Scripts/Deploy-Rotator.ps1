@@ -94,7 +94,7 @@ Write-Information "Retrieve Function App name ARM output"
 $functionAppName = (Get-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $deploymentNameFunctionApp).Outputs.functionAppName.value
 Write-Verbose "functionAppName: $functionAppName"
 
-# Publish
+# Publish rotator from the artifacts folder
 Write-Information "Publish the Application Key Rotator to the Function App"
 $zipFilePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Artifacts\ApplicationKeyRotator.zip"))
 .\Publish-AppService.ps1 `
