@@ -8,9 +8,9 @@ $functionAppName = $applicationName + $environment
 $storageAccountName = $($applicationName + $environment).ToLowerInvariant()
 $applicationInsightsName = $applicationName + $environment
 
-$rg = Get-AzureRmResourceGroup -Name $resourceGroupName -Location $location -ErrorAction SilentlyContinue
+$resourceGroup = Get-AzureRmResourceGroup -Name $resourceGroupName -Location $location -ErrorAction SilentlyContinue
 
-if (!$rg) {
+if (!$resourceGroup) {
     New-AzureRmResourceGroup -Name $resourceGroupName -Location $location
 }
 
@@ -69,3 +69,40 @@ $functionDeploymentName = ((Get-ChildItem $functionTemplateFile).BaseName + '-' 
     -TemplateFile $functionTemplateFile `
     -DeploymentName $functionDeploymentName
 
+
+# Deploy the Azure AD Application Key Rotator
+# Get ARM output variables
+Write-Information "Retrieve Function App MSI SP from ARM output"
+$functionAppSpId = (Get-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $deploymentNameFunctionApp).Outputs.functionAppSpId.value
+Write-Verbose "functionAppSpId: $functionAppSpId"
+
+Write-Information "Retrieve Function App name ARM output"
+$functionAppName = (Get-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $deploymentNameFunctionApp).Outputs.functionAppName.value
+Write-Verbose "functionAppName: $functionAppName"
+
+# Publish
+Write-Information "Publish the Application Key Rotator to the Function App"
+$zipFilePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Artifacts\ApplicationKeyRotator.zip"))
+.\Publish-AppService.ps1 `
+    -ResourceGroupName $resourceGroupName `
+    -ZipFilePath $zipFilePath `
+    -AppServiceName $functionAppName
+
+
+# Check role assignments for Function App Servic Principal Id and set as contributor on the Resource Group
+$role = "Contributor"
+Write-Verbose "Check role assignment $role on $functionAppSpId"
+$assignment = Get-AzureRmRoleAssignment `
+    -ObjectId $functionAppSpId `
+    -ResourceGroupName $resourceGroupName `
+    -RoleDefinitionName $role `
+    -Verbose
+
+if (!$assignment) {
+    Write-Information "Create role assignment $role on $functionAppSpId"
+    $assignment = New-AzureRmRoleAssignment `
+        -ObjectId $functionAppSpId `
+        -ResourceGroupName $resourceGroupName `
+        -RoleDefinitionName $role `
+        -Verbose
+}
