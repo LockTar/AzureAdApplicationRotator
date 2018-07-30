@@ -76,5 +76,15 @@
             },
             "dependsOn": []
         }
-    ]
+    ],
+    "outputs": {
+        "functionAppSpId": {
+            "type": "string",
+            "value": "[reference(resourceid('Microsoft.Web/sites/', parameters('functionAppName')), '2016-08-01', 'Full').identity.principalId]"
+        },
+        "functionAppName": {
+            "type": "string",
+            "value": "[parameters('functionAppName')]"
+        }
+    }
 }
