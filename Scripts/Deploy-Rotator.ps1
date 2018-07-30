@@ -20,7 +20,7 @@ if (!$resourceGroup) {
 $keyVaultTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\KeyVault.json"
 $keyVaultDeploymentName = ((Get-ChildItem $keyVaultTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
-.\Create-AppServicePlan.ps1 `
+.\New-AppServicePlan.ps1 `
     -ResourceGroupName $resourceGroupName `
     -KeyVaultName $keyVaultName `
     -Location $location `
@@ -32,7 +32,7 @@ $keyVaultDeploymentName = ((Get-ChildItem $keyVaultTemplateFile).BaseName + '-' 
 $aspTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\AppServicePlan.json"
 $aspDeploymentName = ((Get-ChildItem $aspTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
-.\Create-AppServicePlan.ps1 `
+.\New-AppServicePlan.ps1 `
     -ResourceGroupName $resourceGroupName `
     -AppServicePlanName $appServicePlanName `
     -Location $location `
@@ -47,7 +47,7 @@ $aspDeploymentName = ((Get-ChildItem $aspTemplateFile).BaseName + '-' + ((Get-Da
 $applicationInsightsTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\ApplicationInsights.json"
 $applicationInsightsDeploymentName = ((Get-ChildItem $applicationInsightsTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
-.\Create-ApplicationInsights.ps1 `
+.\New-ApplicationInsights.ps1 `
     -ResourceGroupName $resourceGroupName `
     -ApplicationInsightsName $applicationInsightsName `
     -Location $location `
@@ -59,7 +59,7 @@ $applicationInsightsDeploymentName = ((Get-ChildItem $applicationInsightsTemplat
 $storageAccountTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\StorageAccount.json"
 $storageAccountDeploymentName = ((Get-ChildItem $storageAccountTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
-.\Create-StorageAccount.ps1 `
+.\New-StorageAccount.ps1 `
     -ResourceGroupName $resourceGroupName `
     -StorageAccountName $storageAccountName `
     -Location $location `
@@ -73,7 +73,7 @@ $storageAccountDeploymentName = ((Get-ChildItem $storageAccountTemplateFile).Bas
 $functionTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\FunctionApp.json"
 $functionDeploymentName = ((Get-ChildItem $functionTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
-.\Create-FunctionApp.ps1 `
+.\New-FunctionApp.ps1 `
     -ResourceGroupName $resourceGroupName `
     -FunctionAppName $functionAppName `
     -Location $location `
