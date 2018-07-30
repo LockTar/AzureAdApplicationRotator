@@ -1,4 +1,9 @@
-$applicationName = "ApplicationRotator"
+$oldverbose = $VerbosePreference
+$VerbosePreference = "continue"
+$oldinformation = $InformationPreference
+$InformationPreference = "continue"
+
+$applicationName = "AppKeyRotator"
 $environment = "Test"
 $location = "westeurope";
 
@@ -70,8 +75,8 @@ $storageAccountDeploymentName = ((Get-ChildItem $storageAccountTemplateFile).Bas
 
 
 # Function App
-$functionTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\FunctionApp.json"
-$functionDeploymentName = ((Get-ChildItem $functionTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
+$functionAppTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\FunctionApp.json"
+$functionAppDeploymentName = ((Get-ChildItem $functionAppTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
 .\New-FunctionApp.ps1 `
     -ResourceGroupName $resourceGroupName `
@@ -80,23 +85,22 @@ $functionDeploymentName = ((Get-ChildItem $functionTemplateFile).BaseName + '-' 
     -StorageAccountName $storageAccountName `
     -AppServicePlanName $appServicePlanName `
     -ApplicationInsightsName $applicationInsightsName `
-    -TemplateFile $functionTemplateFile `
-    -DeploymentName $functionDeploymentName
+    -TemplateFile $functionAppTemplateFile `
+    -DeploymentName $functionAppDeploymentName
 
 
-# Deploy the Azure AD Application Key Rotator
 # Get ARM output variables
 Write-Information "Retrieve Function App MSI SP from ARM output"
-$functionAppSpId = (Get-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $deploymentNameFunctionApp).Outputs.functionAppSpId.value
+$functionAppSpId = (Get-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $functionAppDeploymentName).Outputs.functionAppSpId.value
 Write-Verbose "functionAppSpId: $functionAppSpId"
 
 Write-Information "Retrieve Function App name ARM output"
-$functionAppName = (Get-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $deploymentNameFunctionApp).Outputs.functionAppName.value
+$functionAppName = (Get-AzureRmResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $functionAppDeploymentName).Outputs.functionAppName.value
 Write-Verbose "functionAppName: $functionAppName"
 
-# Publish rotator from the artifacts folder
+# Publish Azure AD Application Key Rotator from the artifacts folder
 Write-Information "Publish the Application Key Rotator to the Function App"
-$zipFilePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "Artifacts\ApplicationKeyRotator.zip"))
+$zipFilePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, ".\Artifacts\ApplicationKeyRotator.zip"))
 .\Publish-AppService.ps1 `
     -ResourceGroupName $resourceGroupName `
     -ZipFilePath $zipFilePath `
@@ -104,19 +108,29 @@ $zipFilePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScript
 
 
 # Check role assignments for Function App Servic Principal Id and set as contributor on the Resource Group
-$role = "Contributor"
-Write-Verbose "Check role assignment $role on $functionAppSpId"
-$assignment = Get-AzureRmRoleAssignment `
-    -ObjectId $functionAppSpId `
-    -ResourceGroupName $resourceGroupName `
-    -RoleDefinitionName $role `
-    -Verbose
+#$role = "Contributor"
+#Write-Verbose "Check role assignment $role on $functionAppSpId"
+#$assignment = Get-AzureRmRoleAssignment `
+#    -ObjectId $functionAppSpId `
+#    -ResourceGroupName $resourceGroupName `
+#    -RoleDefinitionName $role `
+#    -Verbose
+#
+#if (!$assignment) {
+#    Write-Information "Create role assignment $role on $functionAppSpId"
+#    $assignment = New-AzureRmRoleAssignment `
+#        -ObjectId $functionAppSpId `
+#        -ResourceGroupName $resourceGroupName `
+#        -RoleDefinitionName $role `
+#        -Verbose
+#}
 
-if (!$assignment) {
-    Write-Information "Create role assignment $role on $functionAppSpId"
-    $assignment = New-AzureRmRoleAssignment `
-        -ObjectId $functionAppSpId `
-        -ResourceGroupName $resourceGroupName `
-        -RoleDefinitionName $role `
-        -Verbose
-}
+# KeyVault Access Policy
+Write-Information "Set access policy for Function App Service Principal Id"
+Set-AzureRmKeyVaultAccessPolicy `
+    -VaultName $keyVaultName `
+    -ObjectId $functionAppSpId `
+    -PermissionsToSecrets Get,Set
+
+$VerbosePreference = $oldverbose
+$InformationPreference = $oldinformation
