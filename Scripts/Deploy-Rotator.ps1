@@ -15,7 +15,7 @@ if (!$resourceGroup) {
 }
 
 # App Service Plan
-$aspTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\AppServicePlan.json"
+$aspTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\AppServicePlan.json"
 $aspDeploymentName = ((Get-ChildItem $aspTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
 .\Create-AppServicePlan.ps1 `
@@ -30,7 +30,7 @@ $aspDeploymentName = ((Get-ChildItem $aspTemplateFile).BaseName + '-' + ((Get-Da
 
 
 #Application Insights
-$applicationInsightsTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ApplicationInsights.json"
+$applicationInsightsTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\ApplicationInsights.json"
 $applicationInsightsDeploymentName = ((Get-ChildItem $applicationInsightsTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
 .\Create-ApplicationInsights.ps1 `
@@ -42,7 +42,7 @@ $applicationInsightsDeploymentName = ((Get-ChildItem $applicationInsightsTemplat
 
 
 # Storage Account
-$storageAccountTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\StorageAccount.json"
+$storageAccountTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\StorageAccount.json"
 $storageAccountDeploymentName = ((Get-ChildItem $storageAccountTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
 .\Create-StorageAccount.ps1 `
@@ -56,7 +56,7 @@ $storageAccountDeploymentName = ((Get-ChildItem $storageAccountTemplateFile).Bas
 
 
 # Function App
-$functionTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\FunctionApp.json"
+$functionTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\FunctionApp.json"
 $functionDeploymentName = ((Get-ChildItem $functionTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
 .\Create-FunctionApp.ps1 `
