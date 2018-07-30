@@ -20,7 +20,7 @@ if (!$resourceGroup) {
 $keyVaultTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\KeyVault.json"
 $keyVaultDeploymentName = ((Get-ChildItem $keyVaultTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
-.\New-AppServicePlan.ps1 `
+.\New-KeyVault.ps1 `
     -ResourceGroupName $resourceGroupName `
     -KeyVaultName $keyVaultName `
     -Location $location `
