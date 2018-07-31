@@ -4,11 +4,6 @@ Param(
     [string]$Location,
     [string]$StorageAccountName,
     [string]$AppServicePlanName,
-    #[string]$SasToken,
-    #[bool]$ClientAffinityEnabled,
-    #[bool]$AlwaysOn,
-    #[array]$AllowedOrigins,
-    #[string]$Domains,
     [string]$ApplicationInsightsName,
     [string]$TemplateFile,
     [string]$DeploymentName
@@ -24,11 +19,6 @@ $parametersARM.Add("functionAppName", $FunctionAppName)
 $parametersARM.Add("location", $Location)
 $parametersARM.Add("storageAccountName", $StorageAccountName)
 $parametersARM.Add("appServicePlanName", $AppServicePlanName)
-# $parametersARM.Add("clientAffinityEnabled", $ClientAffinityEnabled)
-# $parametersARM.Add("alwaysOn", $AlwaysOn)
-# $parametersARM.Add("loggingSasToken", $SasToken)
-# $parametersARM.Add("allowedOrigins", $AllowedOrigins)
-# $parametersARM.Add("hostNameSslStates", $hostnamesSSLStates)
 $parametersARM.Add("appInsightsName", $ApplicationInsightsName)
 
 # Deploy with ARM
