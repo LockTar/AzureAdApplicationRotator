@@ -1,20 +1,19 @@
-using System.IO;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.WebJobs.Host;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
-using System;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
-using Microsoft.Azure.Management.ResourceManager.Fluent;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Management.Fluent;
-using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.Management.Graph.RBAC.Fluent;
 using Microsoft.Azure.Management.Graph.RBAC.Fluent.Models;
+using Microsoft.Azure.Management.ResourceManager.Fluent;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
+using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.WebJobs.Host;
+using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace SpRotator
 {
@@ -26,14 +25,18 @@ namespace SpRotator
         public static async Task<IActionResult> RunAllApplicationIds([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, TraceWriter log)
         {
             _log = log;
-            var worker = new RotatorWorker(_log);
+
+            string keyVaultUrl = GetKeyVaultUrl();
+            var keyVaultClient = GetKeyVaultClient();
+
+            var worker = new RotatorWorker(_log, keyVaultClient, keyVaultUrl);
             await worker.RotateAll();
 
             return new OkResult();
         }
 
-        [FunctionName("ByApplicationResourceId")]
-        public static async Task<IActionResult> RunByApplicationResourceId([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, TraceWriter log)
+        [FunctionName("ByApplicationObjectId")]
+        public static async Task<IActionResult> RunByApplicationObjectId([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, TraceWriter log)
         {
             _log = log;
             string id = req.Query["id"];
@@ -57,8 +60,11 @@ namespace SpRotator
                 return new NotFoundResult();
             }
 
-            var worker = new RotatorWorker(_log);
+            string keyVaultUrl = GetKeyVaultUrl();
+            var keyVaultClient = GetKeyVaultClient();
+
             const string keyName = "RotatedKey";
+            var worker = new RotatorWorker(_log, keyVaultClient, keyVaultUrl);
             await worker.Rotate(application, keyName);
 
             return new OkResult();
@@ -140,6 +146,27 @@ namespace SpRotator
                 .WithDefaultSubscription();
 
             return azure;
+        }
+
+        private static string GetKeyVaultUrl()
+        {
+            const string KeyVaultEnvironmentVariableName = "KeyVaultUrl";
+            string keyVaultUrl = Environment.GetEnvironmentVariable(KeyVaultEnvironmentVariableName, EnvironmentVariableTarget.Process);
+
+            if (string.IsNullOrWhiteSpace(keyVaultUrl))
+            {
+                throw new ApplicationException($"Missing environment variable '{KeyVaultEnvironmentVariableName}' with as value the url of the KeyVault");
+            }
+
+            return keyVaultUrl;
+        }
+
+        private static KeyVaultClient GetKeyVaultClient()
+        {
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+
+            return keyVaultClient;
         }
     }
 }
