@@ -11,7 +11,7 @@ For in example letting users login into a web application with his or her AD acc
 
 ### Automated
 
-Comming soon...
+Comming soon.
 
 ### Manual steps
 
