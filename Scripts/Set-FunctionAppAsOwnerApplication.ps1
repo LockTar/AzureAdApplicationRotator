@@ -4,8 +4,8 @@ $environment = "Test"
 $functionAppName = $applicationName + $environment
 
 #Get MSI of rotator function app
-Get-AzureRmADServicePrincipal -SearchString $functionAppName | where {$_.DisplayName -eq $functionAppName}
-$msiObjectId = $(Get-AzureRmADServicePrincipal -SearchString $functionAppName | where {$_.DisplayName -eq $functionAppName}).Id
+Get-AzureRmADServicePrincipal -SearchString $functionAppName | Where-Object { $_.DisplayName -eq $functionAppName }
+$msiObjectId = $(Get-AzureRmADServicePrincipal -SearchString $functionAppName | Where-Object { $_.DisplayName -eq $functionAppName }).Id
 
 
 # Get application that needs key rotation
