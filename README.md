@@ -46,7 +46,7 @@ For in example letting users login into a web application with his or her AD acc
     # Coming soon...
     ```
 
-7. Make sure that the rotator function has the right Access Policy on the KeyVault. You can set that with the following PowerShell:`
+7. Make sure that the rotator function has the right Access Policy on the KeyVault. You can set that with the following PowerShell:
 
     ```powershell
     Write-Information "Set access policy for Application Key Rotator Function App Service Principal Id"
