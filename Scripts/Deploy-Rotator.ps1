@@ -88,6 +88,8 @@ $functionAppDeploymentName = ((Get-ChildItem $functionAppTemplateFile).BaseName 
     -TemplateFile $functionAppTemplateFile `
     -DeploymentName $functionAppDeploymentName
 
+# Sleep because function app is slow to start up
+Start-Sleep 30
 
 # Get ARM output variables
 Write-Information "Retrieve Function App MSI SP from ARM output"
@@ -131,6 +133,19 @@ Set-AzureRmKeyVaultAccessPolicy `
     -VaultName $keyVaultName `
     -ObjectId $functionAppSpId `
     -PermissionsToSecrets Get,Set
+
+Write-Information "Set access policy for current user to set test secret"
+Set-AzureRmKeyVaultAccessPolicy `
+    -VaultName $keyVaultName `
+    -ObjectId $(Get-AzureRmADUser -UserPrincipalName $(Get-AzureRmContext).Account.Id).Id `
+    -PermissionsToSecrets Get,Set
+
+# Add a test secret
+Write-Information "Add a test secret so we can test the rotation"
+$tags = @{ApplicationObjectId="83d86c42-6567-49e0-ab8c-e40848205883"}
+$secretValue = ConvertTo-SecureString -String 'Bar' -AsPlainText -Force
+Set-AzureKeyVaultSecret -VaultName $keyVaultName -Name 'Foo' -SecretValue $secretValue -Tag $tags
+
 
 $VerbosePreference = $oldverbose
 $InformationPreference = $oldinformation
