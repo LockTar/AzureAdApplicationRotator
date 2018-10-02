@@ -11,6 +11,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -19,10 +20,10 @@ namespace SpRotator
 {
     public static class ApplicationKeysRotator
     {
-        private static TraceWriter _log;
+        private static ILogger _log;
 
         [FunctionName("AllApplicationIds")]
-        public static async Task<IActionResult> RunAllApplicationIds([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, TraceWriter log)
+        public static async Task<IActionResult> RunAllApplicationIds([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log)
         {
             _log = log;
 
@@ -36,7 +37,7 @@ namespace SpRotator
         }
 
         [FunctionName("ByApplicationObjectId")]
-        public static async Task<IActionResult> RunByApplicationObjectId([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, TraceWriter log)
+        public static async Task<IActionResult> RunByApplicationObjectId([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log)
         {
             _log = log;
             string id = req.Query["id"];
@@ -44,12 +45,12 @@ namespace SpRotator
             if (string.IsNullOrWhiteSpace(id))
             {
                 const string message = "No id parameter found in querystring";
-                _log.Verbose(message);
+                _log.LogDebug(message);
                 return new BadRequestObjectResult(message);
             }
             else
             {
-                _log.Info($"Found id '{id}' in querystring to rotate");
+                _log.LogInformation($"Found id '{id}' in querystring to rotate");
             }
 
             var azure = GetAzureConnection();
@@ -72,7 +73,7 @@ namespace SpRotator
 
         private static async Task<IActiveDirectoryApplication> GetApplication(IAzure azure, string id)
         {
-            _log.Verbose($"Searching for active directory application resource id '{id}'");
+            _log.LogDebug($"Searching for active directory application resource id '{id}'");
             
             try
             {
@@ -91,11 +92,11 @@ namespace SpRotator
 
                 if (application == null)
                 {
-                    _log.Info($"No active directory application found by id '{id}'");
+                    _log.LogInformation($"No active directory application found by id '{id}'");
                 }
                 else
                 {
-                    _log.Info($"Found active directory application '{application.Name}' by id '{application.Id}' and applicationId '{application.ApplicationId}'");
+                    _log.LogInformation($"Found active directory application '{application.Name}' by id '{application.Id}' and applicationId '{application.ApplicationId}'");
                 }
 
                 return application;
@@ -104,15 +105,15 @@ namespace SpRotator
             {
                 if (ex.Response.StatusCode == HttpStatusCode.Forbidden)
                 {
-                    _log.Error($"Forbidden to get active directory application with id '{id}'");
+                    _log.LogError($"Forbidden to get active directory application with id '{id}'");
                 }
                 else if (ex.Response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    _log.Error($"Can't find active directory application with id '{id}'");
+                    _log.LogError($"Can't find active directory application with id '{id}'");
                 }
                 else
                 {
-                    _log.Error(ex.Response.Content);
+                    _log.LogError(ex.Response.Content);
                 }
 
                 return null;
@@ -128,17 +129,17 @@ namespace SpRotator
             p.TenantId = Environment.GetEnvironmentVariable("TenantId", EnvironmentVariableTarget.Process);
             string clientSecret = Environment.GetEnvironmentVariable("ClientSecret", EnvironmentVariableTarget.Process);
 
-            _log.Verbose($"Get the local sp credentials");
+            _log.LogDebug($"Get the local sp credentials");
             AzureCredentials credentials = SdkContext
                 .AzureCredentialsFactory
                 .FromServicePrincipal(p.AppId, clientSecret, p.TenantId, AzureEnvironment.AzureGlobalCloud);
 
-            ////_log.Verbose($"Get the MSI credentials");
+            ////_log.LogDebug($"Get the MSI credentials");
             ////AzureCredentials credentials = SdkContext
             ////     .AzureCredentialsFactory
             ////     .FromMSI(new MSILoginInformation(MSIResourceType.AppService), AzureEnvironment.AzureGlobalCloud);
 
-            _log.Verbose($"Construct the Azure object");
+            _log.LogDebug($"Construct the Azure object");
             var azure = Azure
                 .Configure()
                 .WithLogLevel(HttpLoggingDelegatingHandler.Level.Basic)
