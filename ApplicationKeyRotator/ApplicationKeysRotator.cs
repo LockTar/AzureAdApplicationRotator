@@ -123,10 +123,12 @@ namespace SpRotator
         private static IAzure GetAzureConnection()
         {
             //Use own service principal for local login
-            var p = new Principal();
-            p.UserPrincipalName = "LocalLogin";
-            p.AppId = Environment.GetEnvironmentVariable("ClientId", EnvironmentVariableTarget.Process);
-            p.TenantId = Environment.GetEnvironmentVariable("TenantId", EnvironmentVariableTarget.Process);
+            var p = new Principal
+            {
+                UserPrincipalName = "LocalLogin",
+                AppId = Environment.GetEnvironmentVariable("ClientId", EnvironmentVariableTarget.Process),
+                TenantId = Environment.GetEnvironmentVariable("TenantId", EnvironmentVariableTarget.Process)
+            };
             string clientSecret = Environment.GetEnvironmentVariable("ClientSecret", EnvironmentVariableTarget.Process);
 
             _log.LogDebug($"Get the local sp credentials");
