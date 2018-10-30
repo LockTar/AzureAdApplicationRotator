@@ -15,22 +15,38 @@ using Microsoft.Extensions.Logging;
 
 namespace ApplicationKeyRotator
 {
-    internal class RotatorWorker
+    public class RotatorWorker : IRotatorWorker
     {
         private const string ApplicationObjectIdTagName = "ApplicationObjectId";
 
-        private readonly ILogger _log;
+        //private readonly ILogger _log;
         private readonly KeyVaultClient _keyVaultClient;
         private readonly string _keyVaultUrl;
 
-        internal RotatorWorker(ILogger log, KeyVaultClient keyVaultClient, string keyVaultUrl)
+        public ILogger _log { get; set; }
+
+        public RotatorWorker(IKeyVaultHelper keyVaultHelper)
         {
-            _log = log;
-            _keyVaultClient = keyVaultClient;
-            _keyVaultUrl = keyVaultUrl;
+            _keyVaultClient = keyVaultHelper.GetKeyVaultClient();
+            _keyVaultUrl = keyVaultHelper.GetKeyVaultUrl();
         }
 
-        internal async Task Rotate(IActiveDirectoryApplication application, string keyName)
+        public async Task RotateAll()
+        {
+            var secrets = await GetAllSecretsFromKeyVault();
+
+            foreach (var secret in secrets)
+            {
+                if (secret.Tags != null && secret.Tags.Keys.Contains(ApplicationObjectIdTagName))
+                {
+                    // Get application
+
+                    // Rotate secret for application and store in key vault
+                }
+            }
+        }
+
+        public async Task Rotate(IActiveDirectoryApplication application, string keyName)
         {
             var secrets = await GetAllSecretsFromKeyVault();
             var secret = GetSecretByApplicationObjectId(application.Id, secrets);
@@ -157,21 +173,6 @@ namespace ApplicationKeyRotator
             var secret = Convert.ToBase64String(bytes);
 
             return secret;
-        }
-
-        internal async Task RotateAll()
-        {
-            var secrets = await GetAllSecretsFromKeyVault();
-
-            foreach (var secret in secrets)
-            {
-                if (secret.Tags != null && secret.Tags.Keys.Contains(ApplicationObjectIdTagName))
-                {
-                    // Get application
-
-                    // Rotate secret for application and store in key vault
-                }
-            }
-        }
+        }               
     }
 }

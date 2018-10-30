@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.Graph.RBAC.Fluent;
 using Microsoft.Azure.Management.Graph.RBAC.Fluent.Models;
@@ -10,12 +9,12 @@ using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Willezone.Azure.WebJobs.Extensions.DependencyInjection;
 
 namespace ApplicationKeyRotator
 {
@@ -24,23 +23,22 @@ namespace ApplicationKeyRotator
         private static ILogger _log;
 
         [FunctionName("AllApplicationIds")]
-        public static async Task<IActionResult> RunAllApplicationIds([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log)
+        public static async Task<IActionResult> RunAllApplicationIds([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log, [Inject] IKeyVaultHelper keyVaultHelper, [Inject] IRotatorWorker worker)
         {
             _log = log;
-
-            string keyVaultUrl = GetKeyVaultUrl();
-            var keyVaultClient = GetKeyVaultClient();
-
-            var worker = new RotatorWorker(_log, keyVaultClient, keyVaultUrl);
+            worker._log = _log;
+            
             await worker.RotateAll();
 
             return new OkResult();
         }
 
         [FunctionName("ByApplicationObjectId")]
-        public static async Task<IActionResult> RunByApplicationObjectId([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log)
+        public static async Task<IActionResult> RunByApplicationObjectId([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log, [Inject] IKeyVaultHelper keyVaultHelper, [Inject] IRotatorWorker worker)
         {
             _log = log;
+            worker._log = _log;
+
             string id = req.Query["id"];
 
             if (string.IsNullOrWhiteSpace(id))
@@ -62,11 +60,7 @@ namespace ApplicationKeyRotator
                 return new NotFoundResult();
             }
 
-            string keyVaultUrl = GetKeyVaultUrl();
-            var keyVaultClient = GetKeyVaultClient();
-
             const string keyName = "RotatedKey";
-            var worker = new RotatorWorker(_log, keyVaultClient, keyVaultUrl);
             await worker.Rotate(application, keyName);
 
             return new OkResult();
@@ -163,27 +157,6 @@ namespace ApplicationKeyRotator
                 .WithDefaultSubscription();
 
             return azure;
-        }
-
-        private static string GetKeyVaultUrl()
-        {
-            const string KeyVaultEnvironmentVariableName = "KeyVaultUrl";
-            string keyVaultUrl = Environment.GetEnvironmentVariable(KeyVaultEnvironmentVariableName, EnvironmentVariableTarget.Process);
-
-            if (string.IsNullOrWhiteSpace(keyVaultUrl))
-            {
-                throw new ApplicationException($"Missing environment variable '{KeyVaultEnvironmentVariableName}' with as value the url of the KeyVault");
-            }
-
-            return keyVaultUrl;
-        }
-
-        private static KeyVaultClient GetKeyVaultClient()
-        {
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-
-            return keyVaultClient;
         }
     }
 }
