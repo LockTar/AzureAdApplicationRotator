@@ -69,6 +69,7 @@ Contents of the `local.settings.json`:
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "LocalDevelopment": true,
     "TenantId": "Here the tentant id of you application",
     "ClientId": "Clientid of an AD Application to run locally",
     "ClientSecret": "Client secret of the above clientid to authenticate",
