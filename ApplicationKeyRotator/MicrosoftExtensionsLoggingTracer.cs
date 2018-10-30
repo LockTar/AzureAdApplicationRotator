@@ -6,7 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SpRotator
+namespace ApplicationKeyRotator
 {
     public class MicrosoftExtensionsLoggingTracer : IServiceClientTracingInterceptor
     {

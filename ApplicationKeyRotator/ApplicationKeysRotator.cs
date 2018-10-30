@@ -17,7 +17,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace SpRotator
+namespace ApplicationKeyRotator
 {
     public static class ApplicationKeysRotator
     {

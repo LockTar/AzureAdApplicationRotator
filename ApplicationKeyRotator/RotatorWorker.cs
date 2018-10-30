@@ -13,7 +13,7 @@ using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Rest.Azure;
 using Microsoft.Extensions.Logging;
 
-namespace SpRotator
+namespace ApplicationKeyRotator
 {
     internal class RotatorWorker
     {
