@@ -12,6 +12,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
+using Microsoft.Rest;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -123,7 +124,7 @@ namespace SpRotator
         private static IAzure GetAzureConnection()
         {
             //Use own service principal for local login
-            var p = new Principal
+            var localDevSp = new Principal
             {
                 UserPrincipalName = "LocalLogin",
                 AppId = Environment.GetEnvironmentVariable("ClientId", EnvironmentVariableTarget.Process),
@@ -134,7 +135,10 @@ namespace SpRotator
             _log.LogDebug($"Get the local sp credentials");
             AzureCredentials credentials = SdkContext
                 .AzureCredentialsFactory
-                .FromServicePrincipal(p.AppId, clientSecret, p.TenantId, AzureEnvironment.AzureGlobalCloud);
+                .FromServicePrincipal(localDevSp.AppId, clientSecret, localDevSp.TenantId, AzureEnvironment.AzureGlobalCloud);
+
+            ServiceClientTracing.AddTracingInterceptor(new MicrosoftExtensionsLoggingTracer(_log));
+            ServiceClientTracing.IsEnabled = true;
 
             ////_log.LogDebug($"Get the MSI credentials");
             ////AzureCredentials credentials = SdkContext
@@ -144,6 +148,7 @@ namespace SpRotator
             _log.LogDebug($"Construct the Azure object");
             var azure = Azure
                 .Configure()
+                .WithDelegatingHandler(new HttpLoggingDelegatingHandler())
                 .WithLogLevel(HttpLoggingDelegatingHandler.Level.Basic)
                 .Authenticate(credentials)
                 .WithDefaultSubscription();
