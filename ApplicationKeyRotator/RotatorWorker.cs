@@ -103,7 +103,6 @@ namespace SpRotator
             
             try
             {
-                // BUG: Removes all existing keys... https://github.com/Azure/azure-libraries-for-net/issues/414
                 await application
                     .Update()
                         .DefinePasswordCredential(availableKeyName)
