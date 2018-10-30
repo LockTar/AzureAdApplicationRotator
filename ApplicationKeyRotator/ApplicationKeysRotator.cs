@@ -123,28 +123,37 @@ namespace SpRotator
 
         private static IAzure GetAzureConnection()
         {
-            //Use own service principal for local login
-            var localDevSp = new Principal
-            {
-                UserPrincipalName = "LocalLogin",
-                AppId = Environment.GetEnvironmentVariable("ClientId", EnvironmentVariableTarget.Process),
-                TenantId = Environment.GetEnvironmentVariable("TenantId", EnvironmentVariableTarget.Process)
-            };
-            string clientSecret = Environment.GetEnvironmentVariable("ClientSecret", EnvironmentVariableTarget.Process);
+            AzureCredentials credentials;
+            string localDevelopment = Environment.GetEnvironmentVariable("LocalDevelopment", EnvironmentVariableTarget.Process);
 
-            _log.LogDebug($"Get the local sp credentials");
-            AzureCredentials credentials = SdkContext
-                .AzureCredentialsFactory
-                .FromServicePrincipal(localDevSp.AppId, clientSecret, localDevSp.TenantId, AzureEnvironment.AzureGlobalCloud);
+            if (!string.IsNullOrEmpty(localDevelopment) &&
+                string.Equals(localDevelopment, "true", StringComparison.InvariantCultureIgnoreCase))
+            {
+                _log.LogDebug($"Get the local service principal for local login");                
+                var localDevSp = new Principal
+                {
+                    UserPrincipalName = "LocalLogin",
+                    AppId = Environment.GetEnvironmentVariable("ClientId", EnvironmentVariableTarget.Process),
+                    TenantId = Environment.GetEnvironmentVariable("TenantId", EnvironmentVariableTarget.Process)
+                };
+                string clientSecret = Environment.GetEnvironmentVariable("ClientSecret", EnvironmentVariableTarget.Process);
+
+                _log.LogDebug($"Get the local sp credentials");
+                credentials = SdkContext
+                    .AzureCredentialsFactory
+                    .FromServicePrincipal(localDevSp.AppId, clientSecret, localDevSp.TenantId, AzureEnvironment.AzureGlobalCloud);
+            }
+            else
+            {
+                _log.LogDebug($"Get the MSI credentials");
+                credentials = SdkContext
+                     .AzureCredentialsFactory
+                     .FromMSI(new MSILoginInformation(MSIResourceType.AppService), AzureEnvironment.AzureGlobalCloud);
+            }
 
             ServiceClientTracing.AddTracingInterceptor(new MicrosoftExtensionsLoggingTracer(_log));
             ServiceClientTracing.IsEnabled = true;
-
-            ////_log.LogDebug($"Get the MSI credentials");
-            ////AzureCredentials credentials = SdkContext
-            ////     .AzureCredentialsFactory
-            ////     .FromMSI(new MSILoginInformation(MSIResourceType.AppService), AzureEnvironment.AzureGlobalCloud);
-
+            
             _log.LogDebug($"Construct the Azure object");
             var azure = Azure
                 .Configure()
