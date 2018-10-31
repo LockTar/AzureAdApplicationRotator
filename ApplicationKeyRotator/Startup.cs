@@ -14,7 +14,9 @@ namespace ApplicationKeyRotator
 
         private void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IKeyVaultHelper, KeyVaultHelper>();
+            services.AddScoped<IAuthenticationHelper, AuthenticationHelper>();
+            services.AddScoped<IKeyVaultHelper, KeyVaultHelper>();
+            services.AddScoped<IApplicationService, ApplicationService>();
             services.AddScoped<IRotatorWorker, RotatorWorker>();
         }
     }

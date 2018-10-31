@@ -23,7 +23,7 @@ namespace ApplicationKeyRotator
         private readonly KeyVaultClient _keyVaultClient;
         private readonly string _keyVaultUrl;
 
-        public ILogger _log { get; set; }
+        public ILogger Log { get; set; }
 
         public RotatorWorker(IKeyVaultHelper keyVaultHelper)
         {
@@ -53,7 +53,7 @@ namespace ApplicationKeyRotator
 
             if (secret == null)
             {
-                _log.LogError($"No secret found in the KeyVault that belongs by the application with ObjectId '{application.Id}'. Key rotation for this application will be skipped. Add a secret to the KeyVault for this application to start key rotation.");
+                Log.LogError($"No secret found in the KeyVault that belongs by the application with ObjectId '{application.Id}'. Key rotation for this application will be skipped. Add a secret to the KeyVault for this application to start key rotation.");
             }
             else
             {
@@ -61,35 +61,35 @@ namespace ApplicationKeyRotator
                 await AddSecretToActiveDirectoryApplication(application, keyName, key);
 
                 var tags = secret.Tags;
-                _log.LogDebug($"Set new value for secret '{secret.Identifier.Name}' in KeyVault");
+                Log.LogDebug($"Set new value for secret '{secret.Identifier.Name}' in KeyVault");
                 await _keyVaultClient.SetSecretAsync(_keyVaultUrl, secret.Identifier.Name, key, tags);
-                _log.LogInformation($"Updated the secret '{secret.Identifier.Name}' with a new value in the KeyVault");
+                Log.LogInformation($"Updated the secret '{secret.Identifier.Name}' with a new value in the KeyVault");
             }
         }
 
         private async Task<List<SecretItem>> GetAllSecretsFromKeyVault()
         {
-            _log.LogInformation("Get all secrets from KeyVault");
+            Log.LogInformation("Get all secrets from KeyVault");
             List<SecretItem> allSecrets = new List<SecretItem>();
 
-            _log.LogDebug($"Get secrets from '{_keyVaultUrl}'");
+            Log.LogDebug($"Get secrets from '{_keyVaultUrl}'");
             var secretsPage = await _keyVaultClient.GetSecretsAsync(_keyVaultUrl);
             allSecrets.AddRange(secretsPage.ToList());
 
             while (!string.IsNullOrWhiteSpace(secretsPage.NextPageLink))
             {
-                _log.LogDebug($"Found another page with secrets. Get secrets from '{secretsPage.NextPageLink}'");
+                Log.LogDebug($"Found another page with secrets. Get secrets from '{secretsPage.NextPageLink}'");
                 secretsPage = await _keyVaultClient.GetSecretsAsync(secretsPage.NextPageLink);
                 allSecrets.AddRange(secretsPage.ToList());
             }
 
-            _log.LogDebug($"Found in total {allSecrets.Count} secret(s)");
+            Log.LogDebug($"Found in total {allSecrets.Count} secret(s)");
             return allSecrets;
         }
 
         private SecretItem GetSecretByApplicationObjectId(string applicationObjectId, List<SecretItem> secrets)
         {
-            _log.LogDebug($"Get secret with the tag '{ApplicationObjectIdTagName}' and value '{applicationObjectId}'");
+            Log.LogDebug($"Get secret with the tag '{ApplicationObjectIdTagName}' and value '{applicationObjectId}'");
 
             var secretItem = secrets.SingleOrDefault(s =>
                    s.Tags != null &&
@@ -98,11 +98,11 @@ namespace ApplicationKeyRotator
 
             if (secretItem == null)
             {
-                _log.LogInformation($"No secret found with the tag '{ApplicationObjectIdTagName}' and value '{applicationObjectId}'");
+                Log.LogInformation($"No secret found with the tag '{ApplicationObjectIdTagName}' and value '{applicationObjectId}'");
             }
             else
             {
-                _log.LogInformation($"Found secret '{secretItem.Identifier.Name}' by Application ObjectId '{applicationObjectId}' in the KeyVault");
+                Log.LogInformation($"Found secret '{secretItem.Identifier.Name}' by Application ObjectId '{applicationObjectId}' in the KeyVault");
             }
 
             return secretItem;
@@ -110,7 +110,7 @@ namespace ApplicationKeyRotator
 
         private async Task AddSecretToActiveDirectoryApplication(IActiveDirectoryApplication application, string keyName, string key)
         {
-            _log.LogDebug($"Add new secret to application with Id '{application.Id}'");
+            Log.LogDebug($"Add new secret to application with Id '{application.Id}'");
                         
             string availableKeyName = GetAvailableKeyName(application, keyName, 1);
             int keyDurationInMinutes = 5;
@@ -128,18 +128,18 @@ namespace ApplicationKeyRotator
                         .Attach()
                     .ApplyAsync();
 
-                _log.LogInformation($"Added new key with name '{availableKeyName}' to application with id '{application.Id}' that is valid from UTC '{utcNow}' with a duraction of '{keyDurationInMinutes}' minutes");
+                Log.LogInformation($"Added new key with name '{availableKeyName}' to application with id '{application.Id}' that is valid from UTC '{utcNow}' with a duraction of '{keyDurationInMinutes}' minutes");
             }
             catch (GraphErrorException ex)
             {
                 if (ex.Response.StatusCode == HttpStatusCode.Forbidden)
                 {
-                    _log.LogError($"Forbidden to set key for active directory application with id '{application.Id}'");
-                    _log.LogDebug($"Extra info for application with id '{application.Id}': '{ex.Response.Content}'.");
+                    Log.LogError($"Forbidden to set key for active directory application with id '{application.Id}'");
+                    Log.LogDebug($"Extra info for application with id '{application.Id}': '{ex.Response.Content}'.");
                 }
                 else
                 {
-                    _log.LogError(ex.Response.Content);
+                    Log.LogError(ex.Response.Content);
                 }
             }
         }
@@ -162,7 +162,7 @@ namespace ApplicationKeyRotator
 
         private string GenerateSecretKey()
         {
-            _log.LogDebug("Generate a new secret");
+            Log.LogDebug("Generate a new secret");
 
             var bytes = new byte[32];
             using (var provider = new RNGCryptoServiceProvider())
