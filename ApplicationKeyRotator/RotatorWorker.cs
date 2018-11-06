@@ -1,16 +1,13 @@
 ﻿using Microsoft.Azure.Management.Graph.RBAC.Fluent;
 using Microsoft.Azure.Management.Graph.RBAC.Fluent.Models;
-using Microsoft.Azure.WebJobs.Host;
 using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.Models;
-using Microsoft.Rest.Azure;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationKeyRotator
@@ -19,7 +16,6 @@ namespace ApplicationKeyRotator
     {
         private const string ApplicationObjectIdTagName = "ApplicationObjectId";
 
-        //private readonly ILogger _log;
         private readonly KeyVaultClient _keyVaultClient;
         private readonly string _keyVaultUrl;
 
