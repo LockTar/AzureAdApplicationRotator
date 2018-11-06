@@ -12,11 +12,8 @@ namespace ApplicationKeyRotator
     {
         [FunctionName("AllApplicationIds")]
         public static async Task<IActionResult> RunAllApplicationIds([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log, 
-            [Inject] IAuthenticationHelper authenticationHelper, 
-            [Inject] IKeyVaultHelper keyVaultHelper, 
             [Inject] IRotatorWorker worker)
         {
-            authenticationHelper.Log = log;
             worker.Log = log;
 
             await worker.RotateAll();
@@ -26,12 +23,9 @@ namespace ApplicationKeyRotator
 
         [FunctionName("ByApplicationObjectId")]
         public static async Task<IActionResult> RunByApplicationObjectId([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log, 
-            [Inject] IAuthenticationHelper authenticationHelper, 
-            [Inject] IKeyVaultHelper keyVaultHelper, 
             [Inject] IRotatorWorker worker, 
             [Inject] IApplicationService applicationService)
         {
-            authenticationHelper.Log = log;
             worker.Log = log;
             applicationService.Log = log;
 
@@ -47,17 +41,15 @@ namespace ApplicationKeyRotator
             {
                 log.LogInformation($"Found id '{id}' in querystring to rotate");
             }
-
-            var azure = authenticationHelper.GetAzureConnection();
-            var application = await applicationService.GetApplication(azure, id);
+                        
+            var application = await applicationService.GetApplication(id);
 
             if (application == null)
             {
                 return new NotFoundResult();
             }
 
-            const string keyName = "RotatedKey";
-            await worker.Rotate(application, keyName);
+            await worker.Rotate(application);
 
             return new OkResult();
         }

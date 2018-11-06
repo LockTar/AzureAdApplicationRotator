@@ -10,6 +10,6 @@ namespace ApplicationKeyRotator
 
         Task RotateAll();
 
-        Task Rotate(IActiveDirectoryApplication application, string keyName);
+        Task Rotate(IActiveDirectoryApplication application, string keyName = "RotatedKey");
     }
 }

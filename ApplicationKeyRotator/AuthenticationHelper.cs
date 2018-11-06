@@ -11,10 +11,17 @@ namespace ApplicationKeyRotator
 {
     public class AuthenticationHelper : IAuthenticationHelper
     {
+        private IAzure _azure = null;
+
         public ILogger Log { get; set; }
 
         public IAzure GetAzureConnection()
         {
+            if (_azure != null)
+            {
+                return _azure;
+            }
+
             AzureCredentials credentials;
             string localDevelopment = Environment.GetEnvironmentVariable("LocalDevelopment", EnvironmentVariableTarget.Process);
 
@@ -47,14 +54,14 @@ namespace ApplicationKeyRotator
             ServiceClientTracing.IsEnabled = true;
 
             Log.LogDebug($"Construct the Azure object");
-            var azure = Azure
+            _azure = Azure
                 .Configure()
                 .WithDelegatingHandler(new HttpLoggingDelegatingHandler())
                 .WithLogLevel(HttpLoggingDelegatingHandler.Level.Basic)
                 .Authenticate(credentials)
                 .WithDefaultSubscription();
 
-            return azure;
+            return _azure;
         }
 
     }

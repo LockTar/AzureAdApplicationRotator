@@ -1,6 +1,7 @@
-﻿using System.Net;
+﻿using System;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.Graph.RBAC.Fluent;
 using Microsoft.Azure.Management.Graph.RBAC.Fluent.Models;
 using Microsoft.Extensions.Logging;
@@ -9,25 +10,24 @@ namespace ApplicationKeyRotator
 {
     public class ApplicationService : IApplicationService
     {
+        private readonly IAuthenticationHelper _authenticationHelper;
+        
         public ILogger Log { get; set; }
 
-        public async Task<IActiveDirectoryApplication> GetApplication(IAzure azure, string id)
+        public ApplicationService(IAuthenticationHelper authenticationHelper)
         {
+            _authenticationHelper = authenticationHelper;
+        }
+
+        public async Task<IActiveDirectoryApplication> GetApplication(string id)
+        {
+            _authenticationHelper.Log = Log;
             Log.LogDebug($"Searching for active directory application resource id '{id}'");
+            
+            var azure = _authenticationHelper.GetAzureConnection();
 
             try
             {
-                ////string name = "test";
-                ////var application = azure.AccessManagement.ActiveDirectoryApplications
-                ////.Define(name)
-                ////    .WithSignOnUrl("https://github.com/Azure/azure-sdk-for-java/" + name)
-                ////    // password credentials definition
-                ////    .DefinePasswordCredential("password")
-                ////        .WithPasswordValue("P@ssw0rd")
-                ////        .WithDuration(TimeSpan.FromDays(700))
-                ////        .Attach()
-                ////    .Create();
-
                 var application = await azure.AccessManagement.ActiveDirectoryApplications.GetByIdAsync(id);
 
                 if (application == null)
@@ -57,6 +57,93 @@ namespace ApplicationKeyRotator
                 }
 
                 return null;
+            }
+        }
+
+        public async Task AddSecretToActiveDirectoryApplication(IActiveDirectoryApplication application, string keyName, string key)
+        {
+            Log.LogDebug($"Add new secret to application with Id '{application.Id}'");
+
+            string availableKeyName = GetAvailableKeyName(application, keyName, 1);
+            int keyDurationInMinutes = 5;
+            var duration = new TimeSpan(0, keyDurationInMinutes, 0);
+            DateTime utcNow = DateTime.UtcNow;
+
+            try
+            {
+                await application
+                    .Update()
+                        .DefinePasswordCredential(availableKeyName)
+                        .WithPasswordValue(key)
+                        .WithStartDate(utcNow)
+                        .WithDuration(duration)
+                        .Attach()
+                    .ApplyAsync();
+
+                Log.LogInformation($"Added new key with name '{availableKeyName}' to application with id '{application.Id}' that is valid from UTC '{utcNow}' with a duraction of '{keyDurationInMinutes}' minutes");
+            }
+            catch (GraphErrorException ex)
+            {
+                if (ex.Response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    Log.LogError($"Forbidden to set key for active directory application with id '{application.Id}'");
+                    Log.LogDebug($"Extra info for application with id '{application.Id}': '{ex.Response.Content}'.");
+                }
+                else
+                {
+                    Log.LogError(ex.Response.Content);
+                }
+            }
+        }
+
+        public async Task RemoveExpiredKeys(IActiveDirectoryApplication application)
+        {
+            Log.LogInformation($"Remove expired keys of application with Id '{application.Id}'");
+
+            try
+            {
+                var expiredCredentials = application
+                    .PasswordCredentials
+                        .Where(s => s.Value.EndDate < DateTime.UtcNow)
+                    .ToList();
+
+                foreach (var expiredCredential in expiredCredentials)
+                {
+                    await application
+                        .Update()
+                            .WithoutCredential(expiredCredential.Value.Name)
+                        .ApplyAsync();
+                }
+
+                Log.LogInformation($"Removed the expired keys of application with id '{application.Id}'");
+            }
+            catch (GraphErrorException ex)
+            {
+                if (ex.Response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    Log.LogError($"Forbidden to remove expired keys of active directory application with id '{application.Id}'");
+                    Log.LogDebug($"Extra info for application with id '{application.Id}': '{ex.Response.Content}'.");
+                }
+                else
+                {
+                    Log.LogError(ex.Response.Content);
+                }
+            }
+        }
+
+        private string GetAvailableKeyName(IActiveDirectoryApplication application, string keyName, int suffixNumber)
+        {
+            string completeKeyName = keyName + suffixNumber;
+
+            var existingKeyNames = application.PasswordCredentials.Values.Select(p => p.Name);
+            if (!existingKeyNames.Contains(completeKeyName))
+            {
+                return completeKeyName;
+            }
+            else
+            {
+                suffixNumber++;
+                return GetAvailableKeyName(application, keyName, suffixNumber);
             }
         }
     }

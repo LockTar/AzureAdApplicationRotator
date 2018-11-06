@@ -16,7 +16,10 @@ namespace ApplicationKeyRotator
         {
             services.AddScoped<IAuthenticationHelper, AuthenticationHelper>();
             services.AddScoped<IKeyVaultHelper, KeyVaultHelper>();
+
+            services.AddScoped<IKeyVaultService, KeyVaultService>();
             services.AddScoped<IApplicationService, ApplicationService>();
+
             services.AddScoped<IRotatorWorker, RotatorWorker>();
         }
     }

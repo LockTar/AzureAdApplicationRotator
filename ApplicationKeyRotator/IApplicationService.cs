@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.Graph.RBAC.Fluent;
 using Microsoft.Extensions.Logging;
 
@@ -9,6 +8,10 @@ namespace ApplicationKeyRotator
     {
         ILogger Log { get; set; }
 
-        Task<IActiveDirectoryApplication> GetApplication(IAzure azure, string id);
+        Task<IActiveDirectoryApplication> GetApplication(string id);
+
+        Task AddSecretToActiveDirectoryApplication(IActiveDirectoryApplication application, string keyName, string key);
+
+        Task RemoveExpiredKeys(IActiveDirectoryApplication application);
     }
 }
