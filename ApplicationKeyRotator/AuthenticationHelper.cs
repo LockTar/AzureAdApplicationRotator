@@ -57,7 +57,7 @@ namespace ApplicationKeyRotator
             _azure = Azure
                 .Configure()
                 .WithDelegatingHandler(new HttpLoggingDelegatingHandler())
-                .WithLogLevel(HttpLoggingDelegatingHandler.Level.Basic)
+                .WithLogLevel(HttpLoggingDelegatingHandler.Level.None)
                 .Authenticate(credentials)
                 .WithDefaultSubscription();
 

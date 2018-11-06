@@ -98,7 +98,7 @@ namespace ApplicationKeyRotator
 
         public async Task RemoveExpiredKeys(IActiveDirectoryApplication application)
         {
-            Log.LogInformation($"Remove expired keys of application with Id '{application.Id}'");
+            Log.LogDebug($"Remove expired keys of application with Id '{application.Id}'");
 
             try
             {
@@ -107,15 +107,26 @@ namespace ApplicationKeyRotator
                         .Where(s => s.Value.EndDate < DateTime.UtcNow)
                     .ToList();
 
-                foreach (var expiredCredential in expiredCredentials)
+                if (expiredCredentials.Any())
                 {
-                    await application
-                        .Update()
-                            .WithoutCredential(expiredCredential.Value.Name)
-                        .ApplyAsync();
+                    foreach (var expiredCredential in expiredCredentials)
+                    {
+                        string keyName = expiredCredential.Value.Name;
+
+                        await application
+                            .Update()
+                                .WithoutCredential(keyName)
+                            .ApplyAsync();
+
+                        Log.LogInformation($"Removed the expired key '{keyName}' of application with id '{application.Id}'");
+                    }
+                }
+                else
+                {
+                    Log.LogInformation($"No expired keys to remove for application with id '{application.Id}'");
                 }
 
-                Log.LogInformation($"Removed the expired keys of application with id '{application.Id}'");
+                Log.LogDebug($"Removed all expired keys of application with id '{application.Id}'");
             }
             catch (GraphErrorException ex)
             {

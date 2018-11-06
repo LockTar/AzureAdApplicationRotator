@@ -29,7 +29,7 @@ namespace ApplicationKeyRotator
                 return _allSecrets;
             }
 
-            Log.LogInformation("Get all secrets from KeyVault");
+            Log.LogDebug("Get all secrets from KeyVault");
             _allSecrets = new List<SecretItem>();
 
             Log.LogDebug($"Get secrets from '{_keyVaultUrl}'");
