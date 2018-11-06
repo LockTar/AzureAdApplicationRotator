@@ -65,6 +65,8 @@ namespace ApplicationKeyRotator
                 await _keyVaultClient.SetSecretAsync(_keyVaultUrl, secret.Identifier.Name, key, tags);
                 Log.LogInformation($"Updated the secret '{secret.Identifier.Name}' with a new value in the KeyVault");
             }
+
+            await RemoveExpiredKeys(application);
         }
 
         private async Task<List<SecretItem>> GetAllSecretsFromKeyVault()
@@ -135,6 +137,41 @@ namespace ApplicationKeyRotator
                 if (ex.Response.StatusCode == HttpStatusCode.Forbidden)
                 {
                     Log.LogError($"Forbidden to set key for active directory application with id '{application.Id}'");
+                    Log.LogDebug($"Extra info for application with id '{application.Id}': '{ex.Response.Content}'.");
+                }
+                else
+                {
+                    Log.LogError(ex.Response.Content);
+                }
+            }
+        }
+
+        private async Task RemoveExpiredKeys(IActiveDirectoryApplication application)
+        {
+            Log.LogInformation($"Remove expired keys of application with Id '{application.Id}'");
+
+            try
+            {
+                var expiredCredentials = application
+                    .PasswordCredentials
+                        .Where(s => s.Value.EndDate < DateTime.UtcNow)
+                    .ToList();
+
+                foreach (var expiredCredential in expiredCredentials)
+                {
+                    await application
+                        .Update()
+                            .WithoutCredential(expiredCredential.Value.Name)
+                        .ApplyAsync();
+                }
+
+                Log.LogInformation($"Removed the expired keys of application with id '{application.Id}'");
+            }
+            catch (GraphErrorException ex)
+            {
+                if (ex.Response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    Log.LogError($"Forbidden to remove expired keys of active directory application with id '{application.Id}'");
                     Log.LogDebug($"Extra info for application with id '{application.Id}': '{ex.Response.Content}'.");
                 }
                 else
