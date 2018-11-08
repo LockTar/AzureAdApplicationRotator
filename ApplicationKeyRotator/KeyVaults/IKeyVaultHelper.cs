@@ -1,6 +1,6 @@
 ﻿using Microsoft.Azure.KeyVault;
 
-namespace ApplicationKeyRotator
+namespace ApplicationKeyRotator.KeyVaults
 {
     public interface IKeyVaultHelper
     {

@@ -1,13 +1,11 @@
-﻿using Microsoft.Azure.Management.Graph.RBAC.Fluent;
-using Microsoft.Azure.Management.Graph.RBAC.Fluent.Models;
-using System;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
-using System.Net;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Microsoft.Azure.KeyVault;
+using ApplicationKeyRotator.Applications;
+using ApplicationKeyRotator.Helpers;
+using ApplicationKeyRotator.KeyVaults;
 using Microsoft.Azure.KeyVault.Models;
+using Microsoft.Azure.Management.Graph.RBAC.Fluent;
 using Microsoft.Extensions.Logging;
 
 namespace ApplicationKeyRotator

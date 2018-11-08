@@ -2,11 +2,12 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ApplicationKeyRotator.Authentication;
 using Microsoft.Azure.Management.Graph.RBAC.Fluent;
 using Microsoft.Azure.Management.Graph.RBAC.Fluent.Models;
 using Microsoft.Extensions.Logging;
 
-namespace ApplicationKeyRotator
+namespace ApplicationKeyRotator.Applications
 {
     public class ApplicationService : IApplicationService
     {

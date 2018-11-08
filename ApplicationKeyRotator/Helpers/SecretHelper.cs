@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 
-namespace ApplicationKeyRotator
+namespace ApplicationKeyRotator.Helpers
 {
     internal static class SecretHelper
     {

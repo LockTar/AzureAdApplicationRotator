@@ -1,4 +1,5 @@
 ﻿using System;
+using ApplicationKeyRotator.Configuration.Logging;
 using Microsoft.Azure.Management.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Authentication;
@@ -7,7 +8,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 
-namespace ApplicationKeyRotator
+namespace ApplicationKeyRotator.Authentication
 {
     public class AuthenticationHelper : IAuthenticationHelper
     {

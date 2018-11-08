@@ -2,7 +2,7 @@
 using Microsoft.Azure.Management.Graph.RBAC.Fluent;
 using Microsoft.Extensions.Logging;
 
-namespace ApplicationKeyRotator
+namespace ApplicationKeyRotator.Applications
 {
     public interface IApplicationService
     {

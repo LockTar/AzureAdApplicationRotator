@@ -5,7 +5,7 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Extensions.Logging;
 
-namespace ApplicationKeyRotator
+namespace ApplicationKeyRotator.KeyVaults
 {
     public class KeyVaultService : IKeyVaultService
     {

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Extensions.Logging;
 
-namespace ApplicationKeyRotator
+namespace ApplicationKeyRotator.KeyVaults
 {
     public interface IKeyVaultService
     {

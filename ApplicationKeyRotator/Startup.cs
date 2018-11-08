@@ -1,4 +1,7 @@
 ﻿using ApplicationKeyRotator;
+using ApplicationKeyRotator.Applications;
+using ApplicationKeyRotator.Authentication;
+using ApplicationKeyRotator.KeyVaults;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.DependencyInjection;

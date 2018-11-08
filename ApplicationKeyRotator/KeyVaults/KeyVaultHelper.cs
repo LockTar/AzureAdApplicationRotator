@@ -4,7 +4,7 @@ using System.Text;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 
-namespace ApplicationKeyRotator
+namespace ApplicationKeyRotator.KeyVaults
 {
     public class KeyVaultHelper : IKeyVaultHelper
     {
