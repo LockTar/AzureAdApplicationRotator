@@ -10,7 +10,7 @@ namespace ApplicationKeyRotator.Applications
 
         Task<IActiveDirectoryApplication> GetApplication(string id);
 
-        Task AddSecretToActiveDirectoryApplication(IActiveDirectoryApplication application, string keyName, string key);
+        Task AddSecretToActiveDirectoryApplication(IActiveDirectoryApplication application, string keyName, string key, int keyDurationInMinutes);
 
         Task RemoveExpiredKeys(IActiveDirectoryApplication application);
     }

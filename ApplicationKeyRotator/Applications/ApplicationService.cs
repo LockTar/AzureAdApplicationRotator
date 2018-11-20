@@ -61,12 +61,16 @@ namespace ApplicationKeyRotator.Applications
             }
         }
 
-        public async Task AddSecretToActiveDirectoryApplication(IActiveDirectoryApplication application, string keyName, string key)
+        public async Task AddSecretToActiveDirectoryApplication(IActiveDirectoryApplication application, string keyName, string key, int keyDurationInMinutes)
         {
             Log.LogDebug($"Add new secret to application with Id '{application.Id}'");
 
             string availableKeyName = GetAvailableKeyName(application, keyName, 1);
-            int keyDurationInMinutes = 5;
+            if (keyDurationInMinutes < 1)
+            {
+                keyDurationInMinutes = Convert.ToInt32(Environment.GetEnvironmentVariable("KeyDurationInMinutes", EnvironmentVariableTarget.Process));
+                Log.LogDebug($"No custom keyduration so use default keyduration of '{keyName}' minutes");
+            }
             var duration = new TimeSpan(0, keyDurationInMinutes, 0);
             DateTime utcNow = DateTime.UtcNow;
 

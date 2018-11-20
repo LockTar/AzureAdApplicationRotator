@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ApplicationKeyRotator.Applications;
@@ -44,10 +45,16 @@ namespace ApplicationKeyRotator
             }
         }
 
-        public async Task Rotate(IActiveDirectoryApplication application, string keyName = "RotatedKey")
+        public async Task Rotate(IActiveDirectoryApplication application, string keyName = null, int keyDurationInMinutes = 0)
         {
             _keyVaultService.Log = Log;
             _applicationService.Log = Log;
+
+            if (string.IsNullOrWhiteSpace(keyName))
+            {                
+                keyName = Environment.GetEnvironmentVariable("DefaultKeyName", EnvironmentVariableTarget.Process);
+                Log.LogDebug($"No custom keyname so use default keyname '{keyName}'");
+            }
 
             var allSecrets = await _keyVaultService.GetAllSecretsFromKeyVault();
             var secret = GetSecretByApplicationObjectId(allSecrets, application.Id);
@@ -60,7 +67,7 @@ namespace ApplicationKeyRotator
             {
                 string key = SecretHelper.GenerateSecretKey();
 
-                await _applicationService.AddSecretToActiveDirectoryApplication(application, keyName, key);
+                await _applicationService.AddSecretToActiveDirectoryApplication(application, keyName, key, keyDurationInMinutes);
                 await _keyVaultService.SetSecret(secret, key, secret.Tags);
             }
 

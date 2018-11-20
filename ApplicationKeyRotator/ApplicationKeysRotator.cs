@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using ApplicationKeyRotator.Applications;
 using Microsoft.AspNetCore.Http;
@@ -12,7 +13,7 @@ namespace ApplicationKeyRotator
     public static class ApplicationKeysRotator
     {
         [FunctionName("AllApplicationIds")]
-        public static async Task<IActionResult> RunAllApplicationIds([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log, 
+        public static async Task<IActionResult> RunAllApplicationIds([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log,
             [Inject] IRotatorWorker worker)
         {
             worker.Log = log;
@@ -23,26 +24,47 @@ namespace ApplicationKeyRotator
         }
 
         [FunctionName("ByApplicationObjectId")]
-        public static async Task<IActionResult> RunByApplicationObjectId([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log, 
-            [Inject] IRotatorWorker worker, 
+        public static async Task<IActionResult> RunByApplicationObjectId([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log,
+            [Inject] IRotatorWorker worker,
             [Inject] IApplicationService applicationService)
         {
             worker.Log = log;
             applicationService.Log = log;
-
+            
             string id = req.Query["id"];
+            string keyName = req.Query["keyName"];
+            string keyDurationQuerystring = req.Query["keyDuration"];
 
             if (string.IsNullOrWhiteSpace(id))
             {
-                const string message = "No id parameter found in querystring";
-                log.LogDebug(message);
-                return new BadRequestObjectResult(message);
+                const string idMessage = "No id parameter found in querystring";
+                log.LogError(idMessage);
+                return new BadRequestObjectResult(idMessage);
             }
-            else
+
+            int keyDuration = default(int);
+            if (!string.IsNullOrWhiteSpace(keyDurationQuerystring) && 
+                !int.TryParse(keyDurationQuerystring, out keyDuration))
             {
-                log.LogInformation($"Found id '{id}' in querystring to rotate");
+                const string idMessage = "Keyduration parameter found in querystring is not valid. Please enter valid keyduration in minutes.";
+                log.LogError(idMessage);
+                return new BadRequestObjectResult(idMessage);
             }
-                        
+            
+            string message = $"Found id '{id}' in querystring to rotate";
+
+            if (!string.IsNullOrWhiteSpace(keyName))
+            {
+                message += $", with custom keyname '{keyName}'";
+            }
+
+            if (keyDuration > 0)
+            {
+                message += $" and with custom keyduration '{keyDuration}'";
+            }
+
+            log.LogInformation(message);
+
             var application = await applicationService.GetApplication(id);
 
             if (application == null)
@@ -50,7 +72,7 @@ namespace ApplicationKeyRotator
                 return new NotFoundResult();
             }
 
-            await worker.Rotate(application);
+            await worker.Rotate(application, keyName, keyDuration);
 
             return new OkResult();
         }
