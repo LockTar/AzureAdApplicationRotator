@@ -13,16 +13,16 @@ var paths = {
   code : {
     root : '../',
     setAzureAdApplicationKeyRotator : {
-      v1 : '../Scripts/Set-AzureAdApplicationKeyRotator/v1/'
+      v1 : '../scripts/Set-AzureAdApplicationKeyRotator/v1/'
     },
-    vstsAzureHelpers : '../Scripts/VstsAzureHelpers/'
+    vstsAzureHelpers : '../scripts/VstsAzureHelpers/'
   }
 }
 
 function cleanSetAzureAdApplicationKeyRotator() {
   console.log('Delete everything in ' + paths.extension.setAzureAdApplicationKeyRotator.v1);
   return del([
-    paths.extension.setAzureAdApplicationKeyRotator.v1 + 'Scripts',
+    paths.extension.setAzureAdApplicationKeyRotator.v1 + 'scripts',
     paths.extension.setAzureAdApplicationKeyRotator.v1 + psModulesFolderName
   ]);
 }
@@ -43,9 +43,9 @@ function buildPsModulesSetAzureAdApplicationKeyRotator() {
 }
 
 function buildScriptFilesAzureADApplication() {
-  console.log('Fill ' + paths.extension.setAzureAdApplicationKeyRotator.v1 + ' Scripts from ' + paths.code.setAzureAdApplicationKeyRotator.v1);
+  console.log('Fill ' + paths.extension.setAzureAdApplicationKeyRotator.v1 + ' scripts from ' + paths.code.setAzureAdApplicationKeyRotator.v1);
   return gulp.src(paths.code.setAzureAdApplicationKeyRotator.v1 + '**/*')
-    .pipe(gulp.dest(paths.extension.setAzureAdApplicationKeyRotator.v1 + 'Scripts'));
+    .pipe(gulp.dest(paths.extension.setAzureAdApplicationKeyRotator.v1 + 'scripts'));
 }
 
 var taskName = "SetAdApplication";
