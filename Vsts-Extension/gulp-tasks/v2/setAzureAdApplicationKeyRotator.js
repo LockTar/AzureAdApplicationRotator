@@ -7,59 +7,53 @@ var paths = {
   extension : {
     psModules : psModulesFolderName + '/',
     setAzureAdApplication : {
-      v2 : 'Set-AzureAdApplication/Set-AzureAdApplicationV2/'
+      v1 : 'Set-AzureAdApplicationKeyRotator/Set-AzureAdApplicationKeyRotatorV1/'
     }
   },
   code : {
     root : '../',
     setAzureAdApplication : {
-      v2 : '../scripts/Set-AzureAdApplication/v2/'
-    },
-    newAzureAdApplication : {
-      v2 : '../scripts/New-AzureAdApplication/v2/'
-    },
-    getAzureAdApplication : {
-      v2 : '../scripts/Get-AzureAdApplication/v2/'
+      v1 : '../scripts/Set-AzureAdApplicationKeyRotator/v1/'
     },
     vstsAzureHelpers : '../scripts/VstsAzureHelpers/'
   }
 }
 
 function cleanSetAzureAdApplication() {
-  console.log('Delete everything in ' + paths.extension.setAzureAdApplication.v2);
+  console.log('Delete everything in ' + paths.extension.setAzureAdApplication.v1);
   return del([
-    paths.extension.setAzureAdApplication.v2 + 'scripts',
-    paths.extension.setAzureAdApplication.v2 + psModulesFolderName
+    paths.extension.setAzureAdApplication.v1 + 'scripts',
+    paths.extension.setAzureAdApplication.v1 + psModulesFolderName
   ]);
 }
 
 function buildPsModulesSetAzureAdApplication() {
   console.log('Fill the ps modules');
   gulp.src(paths.extension.psModules + 'TelemetryHelper/**/*')
-    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v2 + psModulesFolderName + "/TelemetryHelper"));
+    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v1 + psModulesFolderName + "/TelemetryHelper"));
     
   gulp.src(paths.extension.psModules + 'VstsAzureRestHelpers_/**/*')
-    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v2 + psModulesFolderName + "/VstsAzureRestHelpers_"));
+    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v1 + psModulesFolderName + "/VstsAzureRestHelpers_"));
 
   gulp.src(paths.extension.psModules + 'VstsTaskSdk/**/*')
-    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v2 + psModulesFolderName + "/VstsTaskSdk"));
+    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v1 + psModulesFolderName + "/VstsTaskSdk"));
 
   return gulp.src(paths.code.vstsAzureHelpers + '**/*')
-    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v2 + psModulesFolderName + "/VstsAzureHelpers"));
+    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v1 + psModulesFolderName + "/VstsAzureHelpers"));
 }
 
 function buildScriptFilesAzureADApplication() {
-  console.log('Fill ' + paths.extension.setAzureAdApplication.v2 + ' scripts from ' + paths.code.setAzureAdApplication.v2);
-  gulp.src(paths.code.setAzureAdApplication.v2 + '**/*')
-    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v2 + 'scripts'));
+  console.log('Fill ' + paths.extension.setAzureAdApplication.v1 + ' scripts from ' + paths.code.setAzureAdApplication.v1);
+  gulp.src(paths.code.setAzureAdApplication.v1 + '**/*')
+    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v1 + 'scripts'));
   
-  console.log('Fill ' + paths.extension.setAzureAdApplication.v2 + ' scripts from ' + paths.code.newAzureAdApplication.v2);
-  gulp.src(paths.code.newAzureAdApplication.v2 + '**/*')
-    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v2 + 'scripts'));
+  console.log('Fill ' + paths.extension.setAzureAdApplication.v1 + ' scripts from ' + paths.code.newAzureAdApplication.v1);
+  gulp.src(paths.code.newAzureAdApplication.v1 + '**/*')
+    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v1 + 'scripts'));
 
-  console.log('Fill ' + paths.extension.setAzureAdApplication.v2 + ' scripts from ' + paths.code.getAzureAdApplication.v2);
-  return gulp.src(paths.code.getAzureAdApplication.v2 + '**/*')
-    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v2 + 'scripts'));
+  console.log('Fill ' + paths.extension.setAzureAdApplication.v1 + ' scripts from ' + paths.code.getAzureAdApplication.v1);
+  return gulp.src(paths.code.getAzureAdApplication.v1 + '**/*')
+    .pipe(gulp.dest(paths.extension.setAzureAdApplication.v1 + 'scripts'));
 }
 
 var taskName = "SetAdApplication";

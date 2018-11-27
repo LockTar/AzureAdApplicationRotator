@@ -7,48 +7,48 @@ var paths = {
   extension : {
     psModules : psModulesFolderName + '/',
     removeAzureAdApplication : {
-      v2 : 'Remove-AzureAdApplication/Remove-AzureAdApplicationV2/'
+      v1 : 'Remove-AzureAdApplicationKeyRotator/Remove-AzureAdApplicationKeyRotatorV1/'
     }
   },
   code : {
     root : '../',
     removeAzureAdApplication : {
-      v2 : '../scripts/Remove-AzureAdApplication/v2/'
+      v1 : '../scripts/Remove-AzureAdApplicationKeyRotator/v1/'
     },
     vstsAzureHelpers : '../scripts/VstsAzureHelpers/'
   }
 }
 
 function cleanRemoveAzureAdApplication() {
-  console.log('Delete everything in ' + paths.extension.removeAzureAdApplication.v2);
+  console.log('Delete everything in ' + paths.extension.removeAzureAdApplication.v1);
   return del([
-    paths.extension.removeAzureAdApplication.v2 + 'scripts',
-    paths.extension.removeAzureAdApplication.v2 + psModulesFolderName
+    paths.extension.removeAzureAdApplication.v1 + 'scripts',
+    paths.extension.removeAzureAdApplication.v1 + psModulesFolderName
   ]);
 }
 
 function buildPsModulesRemoveAzureAdApplication() {
   console.log('Fill the ps modules');
   // gulp.src(paths.extension.psModules + 'AzureRM/**/*')
-  //   .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v2 + psModulesFolderName + "/AzureRM"));
+  //   .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v1 + psModulesFolderName + "/AzureRM"));
 
   gulp.src(paths.extension.psModules + 'TelemetryHelper/**/*')
-    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v2 + psModulesFolderName + "/TelemetryHelper"));
+    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v1 + psModulesFolderName + "/TelemetryHelper"));
     
   gulp.src(paths.extension.psModules + 'VstsAzureRestHelpers_/**/*')
-    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v2 + psModulesFolderName + "/VstsAzureRestHelpers_"));
+    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v1 + psModulesFolderName + "/VstsAzureRestHelpers_"));
 
   gulp.src(paths.extension.psModules + 'VstsTaskSdk/**/*')
-    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v2 + psModulesFolderName + "/VstsTaskSdk"));
+    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v1 + psModulesFolderName + "/VstsTaskSdk"));
 
   return gulp.src(paths.code.vstsAzureHelpers + '**/*')
-    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v2 + psModulesFolderName + "/VstsAzureHelpers"));
+    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v1 + psModulesFolderName + "/VstsAzureHelpers"));
 }
 
 function buildScriptFilesAzureADApplication() {
-  console.log('Fill ' + paths.extension.removeAzureAdApplication.v2 + ' scripts from ' + paths.code.removeAzureAdApplication.v2);
-  return gulp.src(paths.code.removeAzureAdApplication.v2 + '**/*')
-    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v2 + 'scripts'));
+  console.log('Fill ' + paths.extension.removeAzureAdApplication.v1 + ' scripts from ' + paths.code.removeAzureAdApplication.v1);
+  return gulp.src(paths.code.removeAzureAdApplication.v1 + '**/*')
+    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v1 + 'scripts'));
 }
 
 var taskName = "RemoveAdApplication";
