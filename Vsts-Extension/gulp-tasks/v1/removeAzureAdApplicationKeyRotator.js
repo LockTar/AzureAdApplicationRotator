@@ -13,16 +13,16 @@ var paths = {
   code : {
     root : '../',
     removeAzureAdApplication : {
-      v1 : '../scripts/Remove-AzureAdApplicationKeyRotator/v1/'
+      v1 : '../Scripts/Remove-AzureAdApplicationKeyRotator/v1/'
     },
-    vstsAzureHelpers : '../scripts/VstsAzureHelpers/'
+    vstsAzureHelpers : '../Scripts/VstsAzureHelpers/'
   }
 }
 
 function cleanRemoveAzureAdApplication() {
   console.log('Delete everything in ' + paths.extension.removeAzureAdApplication.v1);
   return del([
-    paths.extension.removeAzureAdApplication.v1 + 'scripts',
+    paths.extension.removeAzureAdApplication.v1 + 'Scripts',
     paths.extension.removeAzureAdApplication.v1 + psModulesFolderName
   ]);
 }
@@ -46,9 +46,9 @@ function buildPsModulesRemoveAzureAdApplication() {
 }
 
 function buildScriptFilesAzureADApplication() {
-  console.log('Fill ' + paths.extension.removeAzureAdApplication.v1 + ' scripts from ' + paths.code.removeAzureAdApplication.v1);
+  console.log('Fill ' + paths.extension.removeAzureAdApplication.v1 + ' Scripts from ' + paths.code.removeAzureAdApplication.v1);
   return gulp.src(paths.code.removeAzureAdApplication.v1 + '**/*')
-    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v1 + 'scripts'));
+    .pipe(gulp.dest(paths.extension.removeAzureAdApplication.v1 + 'Scripts'));
 }
 
 var taskName = "RemoveAdApplication";
