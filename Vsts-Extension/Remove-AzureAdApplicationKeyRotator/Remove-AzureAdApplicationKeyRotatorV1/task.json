@@ -1,0 +1,80 @@
+{
+    "id": "383c1fab-fab4-4b6b-ad10-27db6d63d220",
+    "name": "Remove-Azure-AD-Application-KeyRotator",
+    "friendlyName": "Remove Azure AD Application Key Rotator",
+    "description": "Remove the whole Azure AD Application Key Rotator",
+    "helpMarkDown": "Task version: #{Extension.Version}#",
+    "category": "Deploy",
+    "visibility": [
+        "Release",
+        "Build"
+    ],
+    "author": "Ralph Jansen",
+    "version": {
+        "Major": 1,
+        "Minor": 0,
+        "Patch": 0
+    },
+    "preview": "false",
+    "instanceNameFormat": "Remove Azure AD Application Key Rotator",
+    "groups": [{
+        "name": "AzureDetails",
+        "displayName": "Azure Details",
+        "isExpanded": true
+    }],
+    "inputs": [
+        {
+            "name": "ConnectedServiceNameARM",
+            "aliases": [
+                "azureSubscription"
+            ],
+            "type": "connectedService:AzureRM",
+            "label": "Azure Subscription",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "AzureDetails",
+            "helpMarkDown": "Azure Resource Manager subscription to configure before running PowerShell."
+        },
+        {
+            "name": "method",
+            "type": "pickList",
+            "label": "Method",
+            "defaultValue": "ObjectId",
+            "required": true,
+            "groupName": "AzureDetails",
+            "helpMarkDown": "Choose the method to get an Azure AD Application.",
+            "properties": {
+                "EditableOptions": "False"
+            },
+            "options": {
+                "objectid": "ObjectId",
+                "applicationid": "ApplicationId"
+            }
+        },
+        {
+            "name": "objectId",
+            "type": "string",
+            "label": "Object Id",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "AzureDetails",
+            "helpMarkDown": "Provide the Application object Id of the Azure AD Application.",
+            "visibleRule": "method = ObjectId"
+        },
+        {
+            "name": "applicationId",
+            "type": "string",
+            "label": "Application Id",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "AzureDetails",
+            "helpMarkDown": "Provide the Application Id of the Azure AD Application.",
+            "visibleRule": "method = ApplicationId"
+        }
+    ],
+    "execution": {
+        "PowerShell3": {
+            "target": "Main.ps1"
+        }
+    }
+}

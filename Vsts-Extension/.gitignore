@@ -1,0 +1,8 @@
+node_modules
+*.vsix
+Readme.md
+
+/**/ps_modules/
+/**/scripts/
+
+!/ps_modules/

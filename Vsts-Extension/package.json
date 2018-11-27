@@ -1,0 +1,19 @@
+{
+  "name": "azure-ad-application-management",
+  "version": "1.0.0",
+  "description": "A VSTS extension with build and release tasks to manage Azure AD Applications.",
+  "main": "vss-extension.json",
+  "dependencies": {},
+  "devDependencies": {
+    "del": "^3.0.0",
+    "gulp": "^4.0.0",
+    "gulp-hub": "github:frankwallis/gulp-hub#4.2.0",
+    "npm": "^6.4.1",
+    "tfx-cli": "^0.6.3",
+    "vss-web-extension-sdk": "^5.141.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ralph-Jansen"
+}
