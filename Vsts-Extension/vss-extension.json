@@ -1,6 +1,5 @@
 {
     "manifestVersion": 1,
-    "name": "Azure AD Application Key Rotator",
     "description": "An Azure DevOps extension with Azure Pipelines tasks to manage Azure AD Applications keys by rotating them.",
     "targets": [
         {
@@ -66,23 +65,23 @@
           "uri": "https://www.locktar.nl"
         },
         "getstarted": {
-          "uri": "https://github.com/LockTar/AzureAdApplicationManagement#get-started"
+          "uri": "https://github.com/LockTar/AzureAdApplicationRotator#get-started"
         },
         "support": {
-          "uri": "https://github.com/LockTar/AzureAdApplicationManagement/issues"
+          "uri": "https://github.com/LockTar/AzureAdApplicationRotator/issues"
         },
         "issues": {
-          "uri": "https://github.com/LockTar/AzureAdApplicationManagement/issues"
+          "uri": "https://github.com/LockTar/AzureAdApplicationRotator/issues"
         }
       },
       "repository": {
         "type": "git",
-        "uri": "https://github.com/LockTar/AzureAdApplicationManagement"
+        "uri": "https://github.com/LockTar/AzureAdApplicationRotator"
       },
       "badges": [
         {
-          "href": "https://ralphjansen.visualstudio.com/17322302-127a-4675-bb41-f40515256433/_build/definition?definitionId=12",
-          "uri": "https://ralphjansen.visualstudio.com/AzureAdApplicationManagement/_apis/build/status/Vsts-Extension?branchName=master",
+          "href": "https://ralphjansen.visualstudio.com/AzureAdApplicationRotator/_build/definition?definitionId=14",
+          "uri": "https://ralphjansen.visualstudio.com/AzureAdApplicationRotator/_apis/build/status/Vsts-Extension?branchName=master",
           "description": "Build"
         }
     ]    

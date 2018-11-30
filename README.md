@@ -7,7 +7,7 @@ Rotate your Azure AD Application (App Registration) keys periodically to an Azur
 Let's say you have some Azure AD Applications for your business applications.
 For in example letting users login into a web application with his or her AD account. You need an Azure AD application with a key to do that. Those keys can be rotated into an Azure KeyVault. In that way, you have more security in your business application. The business application can just retrieve the current key from the KeyVault.
 
-## Getting started
+## Get Started
 
 ### Automated
 
