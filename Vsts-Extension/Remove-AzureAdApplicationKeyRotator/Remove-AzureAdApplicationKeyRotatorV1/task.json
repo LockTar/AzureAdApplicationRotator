@@ -1,5 +1,4 @@
 {
-    "id": "383c1fab-fab4-4b6b-ad10-27db6d63d220",
     "name": "Remove-Azure-AD-Application-KeyRotator",
     "friendlyName": "Remove Azure AD Application Key Rotator",
     "description": "Remove the whole Azure AD Application Key Rotator",
@@ -12,8 +11,7 @@
     "author": "Ralph Jansen",
     "version": {
         "Major": 1,
-        "Minor": 0,
-        "Patch": 0
+        "Minor": 0
     },
     "preview": "false",
     "instanceNameFormat": "Remove Azure AD Application Key Rotator",

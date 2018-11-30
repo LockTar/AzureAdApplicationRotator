@@ -1,5 +1,4 @@
 {
-    "id": "67b8e7c2-d3d8-4b21-a0e3-ee2017926c12",
     "name": "Set-Azure-AD-Application-KeyRotator",
     "friendlyName": "Set Azure AD Application Key Rotator",
     "description": "Set Azure AD Application Key Rotator",
@@ -12,8 +11,7 @@
     "author": "Ralph Jansen",
     "version": {
         "Major": 1,
-        "Minor": 0,
-        "Patch": 0
+        "Minor": 0
     },
     "preview": "false",
     "instanceNameFormat": "Set Azure AD Application Key Rotator",

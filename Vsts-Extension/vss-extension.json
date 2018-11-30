@@ -1,10 +1,7 @@
 {
     "manifestVersion": 1,
-    "id": "Azure-AD-Application-KeyRotator",
-    "version": "1.0.0",
     "name": "Azure AD Application Key Rotator",
     "description": "An Azure DevOps extension with Azure Pipelines tasks to manage Azure AD Applications keys by rotating them.",
-    "publisher": "RalphJansen",
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
