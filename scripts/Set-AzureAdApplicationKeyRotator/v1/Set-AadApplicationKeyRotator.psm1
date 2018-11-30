@@ -8,9 +8,9 @@ function Set-AadApplicationKeyRotator {
         [Parameter(Mandatory)]
         [string]$ResourceGroupName,
         [Parameter(Mandatory)]
-        [string]$KeyVaultName,
-        [Parameter(Mandatory)]
         [string]$Location,
+        [Parameter(Mandatory)]
+        [string]$KeyVaultName,
         [bool]$CreateApplicationInsights
     )
 
@@ -64,14 +64,14 @@ function Set-AadApplicationKeyRotator {
     }
     else {
         Write-Debug 'Create Application Insights is false so check if Application Insights '$applicationInsightsName' already exist'
-        $applicationInsights = Get-AzureRmApplicationGateway -Name $applicationInsightsName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
+        $applicationInsights = Get-AzureRmApplicationInsights -Name $applicationInsightsName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
         
         if ($applicationInsights) {
             Write-Information 'Application Insights '$applicationInsightsName' exists so remove it'
-            Remove-AzureRmApplicationInsights -ResourceGroupName $ResourceGroupName -Name $applicationInsightsName
+            Remove-AzureRmApplicationInsights -ResourceGroupName $ResourceGroupName -Name $applicationInsightsName -Confirm
         }
         else {
-            Write-Debug "Application Insights '$applicationInsightsName' doesn't exist so do nothing"
+            Write-Information "Application Insights '$applicationInsightsName' doesn't exist so do nothing"
         }
     }
 

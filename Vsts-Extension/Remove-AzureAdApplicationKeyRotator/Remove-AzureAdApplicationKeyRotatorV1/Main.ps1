@@ -1,9 +1,9 @@
 Trace-VstsEnteringInvocation $MyInvocation
 
 # Get inputs.
-$method = Get-VstsInput -Name method
-$objectId = Get-VstsInput -Name objectId
-$applicationId = Get-VstsInput -Name applicationId
+$resourceGroupName = Get-VstsInput -Name resourceGroupName -Require
+$location = Get-VstsInput -Name location -Require
+$keyVaultName = Get-VstsInput -Name keyVaultName -Require
 
 # Initialize Azure Connection
 Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers\VstsAzureHelpers.psm1
@@ -12,10 +12,15 @@ Initialize-Module -Name "AzureRM.Resources" -RequiredVersion "6.7.0"
 Initialize-AzureRM
 
 Write-Verbose "Input variables are: "
-Write-Verbose "method: $method"
-Write-Verbose "objectId: $objectId"
-Write-Verbose "applicationId: $applicationId"
+Write-Verbose "resourceGroupName: $resourceGroupName"
+Write-Verbose "keyVaultName: $keyVaultName"
+Write-Verbose "location: $location"
 
-Import-Module $PSScriptRoot\scripts\Remove-AadApplication.psm1
+Import-Module $PSScriptRoot\scripts\Remove-AadApplicationKeyRotator.psm1
 
-Remove-AadApplication -ObjectId $objectId -ApplicationId $applicationId
+Remove-AadApplicationKeyRotator `
+    -ResourceGroupName $resourceGroupName `
+    -KeyVaultName $keyVaultName `
+    -Location $location
+
+Trace-VstsLeavingInvocation $MyInvocation

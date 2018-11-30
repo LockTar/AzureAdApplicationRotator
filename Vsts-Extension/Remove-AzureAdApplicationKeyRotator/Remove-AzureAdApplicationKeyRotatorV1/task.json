@@ -36,40 +36,31 @@
             "helpMarkDown": "Azure Resource Manager subscription to configure before running PowerShell."
         },
         {
-            "name": "method",
-            "type": "pickList",
-            "label": "Method",
-            "defaultValue": "ObjectId",
-            "required": true,
-            "groupName": "AzureDetails",
-            "helpMarkDown": "Choose the method to get an Azure AD Application.",
-            "properties": {
-                "EditableOptions": "False"
-            },
-            "options": {
-                "objectid": "ObjectId",
-                "applicationid": "ApplicationId"
-            }
-        },
-        {
-            "name": "objectId",
+            "name": "resourceGroupName",
             "type": "string",
-            "label": "Object Id",
+            "label": "Resource Group Name",
             "defaultValue": "",
             "required": true,
             "groupName": "AzureDetails",
-            "helpMarkDown": "Provide the Application object Id of the Azure AD Application.",
-            "visibleRule": "method = ObjectId"
+            "helpMarkDown": "Provide the name of the Resource Group to remove the rotator from."
         },
         {
-            "name": "applicationId",
+            "name": "location",
             "type": "string",
-            "label": "Application Id",
+            "label": "Location",
             "defaultValue": "",
             "required": true,
             "groupName": "AzureDetails",
-            "helpMarkDown": "Provide the Application Id of the Azure AD Application.",
-            "visibleRule": "method = ApplicationId"
+            "helpMarkDown": "The location of the Resource Group"
+        },
+        {
+            "name": "keyVaultName",
+            "type": "string",
+            "label": "Key Vault Name",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "AzureDetails",
+            "helpMarkDown": "Provide the name of the Azure Key Vault where the rotator belongs to."
         }
     ],
     "execution": {
