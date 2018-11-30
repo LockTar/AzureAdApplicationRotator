@@ -29,7 +29,7 @@
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "Set-AzureAdApplication-KeyRotator"
+                "name": "Set-AzureAdApplicationKeyRotator"
             }
         },
         {
@@ -39,7 +39,7 @@
                 "ms.vss-distributed-task.tasks"
             ],
             "properties": {
-                "name": "Remove-AzureAdApplication-KeyRotator"
+                "name": "Remove-AzureAdApplicationKeyRotator"
             }
         }
     ],
@@ -50,10 +50,10 @@
             "packagePath": "lib"
         },
         {
-            "path": "Set-AzureAdApplication-KeyRotator"
+            "path": "Set-AzureAdApplicationKeyRotator"
         },
         {
-            "path": "Remove-AzureAdApplication-KeyRotator"
+            "path": "Remove-AzureAdApplicationKeyRotator"
         }
     ],
     "content": {
