@@ -1,9 +1,10 @@
 Trace-VstsEnteringInvocation $MyInvocation
 
 # Get inputs.
-$resourceGroupName = Get-VstsInput -Name resourceGroupName
+$resourceGroupName = Get-VstsInput -Name resourceGroupName -Require
+$location = Get-VstsInput -Name location -Require
 $keyVaultName = Get-VstsInput -Name keyVaultName -Require
-$applicationInsightsName = Get-VstsInput -Name applicationInsightsName -Require
+$createApplicationInsights = Get-VstsInput -Name createApplicationInsights -AsBool
 
 # Initialize Azure Connection
 Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers\VstsAzureHelpers.psm1
@@ -14,13 +15,15 @@ Initialize-AzureRM
 Write-Verbose "Input variables are: "
 Write-Verbose "resourceGroupName: $resourceGroupName"
 Write-Verbose "keyVaultName: $keyVaultName"
-Write-Verbose "applicationInsightsName: $applicationInsightsName"
+Write-Verbose "location: $location"
+Write-Verbose "createApplicationInsights: $createApplicationInsights"
 
 Import-Module $PSScriptRoot\scripts\Set-AadApplicationKeyRotator.psm1
 
 Set-AadApplicationKeyRotator `
     -ResourceGroupName $resourceGroupName `
     -KeyVaultName $keyVaultName `
-    -ApplicationInsightsName $applicationInsightsName
+    -Location $location `
+    -CreateApplicationInsights $createApplicationInsights
 
 Trace-VstsLeavingInvocation $MyInvocation

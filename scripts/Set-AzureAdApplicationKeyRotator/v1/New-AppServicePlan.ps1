@@ -11,18 +11,7 @@ Param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Information "Create App Service Plan"
-
-# # Bug with app plans etc in combination with ASE
-# if ($Location -ieq "westeurope")
-# {
-#     $Location = "West Europe"
-# }
-
-# if ($Location -ieq "northeurope")
-# {
-#     $Location = "North Europe"
-# }
+Write-Information "Set App Service Plan '$AppServicePlanName'"
 
 # Create parameters object for ARM template
 $parametersARM = @{}

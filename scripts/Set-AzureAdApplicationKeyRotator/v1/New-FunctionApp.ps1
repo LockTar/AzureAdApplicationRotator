@@ -11,7 +11,7 @@ Param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Information "Create Function App"
+Write-Information "Set Function App '$FunctionAppName'"
 
 # Create parameters object for ARM template
 $parametersARM = @{}

@@ -22,8 +22,7 @@
         "displayName": "Azure Details",
         "isExpanded": true
     }],
-    "inputs": [
-        {
+    "inputs": [{
             "name": "ConnectedServiceNameARM",
             "aliases": [
                 "azureSubscription"
@@ -45,6 +44,15 @@
             "helpMarkDown": "Provide the name of the Resource Group to deploy the rotator to."
         },
         {
+            "name": "location",
+            "type": "string",
+            "label": "Location",
+            "defaultValue": "",
+            "required": true,
+            "groupName": "AzureDetails",
+            "helpMarkDown": "The location of the Resource Group"
+        },
+        {
             "name": "keyVaultName",
             "type": "string",
             "label": "Key Vault Name",
@@ -54,13 +62,13 @@
             "helpMarkDown": "Provide the name of the Azure Key Vault where the secrets are stored."
         },
         {
-            "name": "applicationInsightsName",
-            "type": "string",
-            "label": "Application Insights Name",
+            "name": "createApplicationInsights",
+            "type": "bool",
+            "label": "Create Application Insights",
             "defaultValue": "",
-            "required": true,
+            "required": false,
             "groupName": "AzureDetails",
-            "helpMarkDown": "Provide the name of the Application Insights Instance."
+            "helpMarkDown": "Create Application Insights instance for debugging the rotator."
         }
     ],
     "outputVariables": [{

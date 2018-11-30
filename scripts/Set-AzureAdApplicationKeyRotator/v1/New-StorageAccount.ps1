@@ -10,7 +10,7 @@ Param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Information "Create Storage Account"
+Write-Information "Set Storage Account '$StorageAccountName'"
 
 # Create parameters object for ARM template
 $parametersARM = @{}

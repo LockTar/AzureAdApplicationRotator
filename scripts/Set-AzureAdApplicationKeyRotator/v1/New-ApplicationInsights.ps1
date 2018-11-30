@@ -8,7 +8,7 @@ Param(
 
 $ErrorActionPreference = "Stop"
 
-Write-Information "Create Application Insights"
+Write-Information "Set Application Insights '$ApplicationInsightsName'"
 
 # Create parameters object for ARM template
 $parametersARM = @{}
