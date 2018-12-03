@@ -61,9 +61,9 @@
         },
         {
             "name": "createApplicationInsights",
-            "type": "bool",
+            "type": "boolean",
             "label": "Create Application Insights",
-            "defaultValue": "",
+            "defaultValue": "false",
             "required": false,
             "groupName": "AzureDetails",
             "helpMarkDown": "Create Application Insights instance for debugging the rotator."
