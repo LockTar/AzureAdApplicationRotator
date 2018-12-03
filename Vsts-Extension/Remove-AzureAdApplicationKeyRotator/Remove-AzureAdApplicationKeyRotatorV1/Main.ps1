@@ -16,9 +16,9 @@ Write-Verbose "resourceGroupName: $resourceGroupName"
 Write-Verbose "keyVaultName: $keyVaultName"
 Write-Verbose "location: $location"
 
-Import-Module $PSScriptRoot\scripts\Remove-AadApplicationKeyRotator.psm1
+Import-Module $PSScriptRoot\scripts\Remove-AzureAdApplicationKeyRotator.psm1
 
-Remove-AadApplicationKeyRotator `
+Remove-AzureAdApplicationKeyRotator `
     -ResourceGroupName $resourceGroupName `
     -KeyVaultName $keyVaultName `
     -Location $location

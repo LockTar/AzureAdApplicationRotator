@@ -18,7 +18,8 @@
         "Cloud",
         "Active Directory",
         "App Registration",
-        "Application"
+        "Application",
+        "Key Vault"
     ],
     "contributions": [
         {

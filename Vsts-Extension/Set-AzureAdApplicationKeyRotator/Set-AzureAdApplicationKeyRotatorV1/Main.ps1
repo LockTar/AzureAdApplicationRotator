@@ -18,9 +18,9 @@ Write-Verbose "keyVaultName: $keyVaultName"
 Write-Verbose "location: $location"
 Write-Verbose "createApplicationInsights: $createApplicationInsights"
 
-Import-Module $PSScriptRoot\scripts\Set-AadApplicationKeyRotator.psm1
+Import-Module $PSScriptRoot\scripts\Set-AzureAdApplicationKeyRotator.psm1
 
-Set-AadApplicationKeyRotator `
+Set-AzureAdApplicationKeyRotator `
     -ResourceGroupName $resourceGroupName `
     -KeyVaultName $keyVaultName `
     -Location $location `

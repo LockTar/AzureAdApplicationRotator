@@ -2,7 +2,7 @@
 $script:azureModule = $null
 $script:azureRMProfileModule = $null
 
-function Set-AadApplicationKeyRotator {
+function Set-AzureAdApplicationKeyRotator {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory)]
@@ -14,15 +14,22 @@ function Set-AadApplicationKeyRotator {
         [bool]$CreateApplicationInsights
     )
 
+    # Dot source the private functions.
+    . $PSScriptRoot/New-ApplicationInsights.ps1
+    . $PSScriptRoot/New-AppServicePlan.ps1
+    . $PSScriptRoot/New-FunctionApp.ps1
+    . $PSScriptRoot/New-StorageAccount.ps1
+    . $PSScriptRoot/Publish-AppService.ps1
+
     $applicationName = "AppKeyRotator"
 
     $functionAppName = "$KeyVaultName-$applicationName"
-    $appServicePlanName = $functionAppName
-    $storageAccountName = $($functionAppName).ToLowerInvariant()
-    $applicationInsightsName = $functionAppName
+    $appServicePlanName = $functionAppName + "Plan"
+    $storageAccountName = $($KeyVaultName).ToLowerInvariant().Replace('-', '') + "sa"
+    $applicationInsightsName = $functionAppName + "ai"
 
     #Resource Group
-    Write-Debug "Check if Resource Group '$ResourceGroupName' already exist"
+    Write-Verbose "Check if Resource Group '$ResourceGroupName' already exist"
     $resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location -ErrorAction SilentlyContinue
 
     if (!$resourceGroup) {
@@ -30,7 +37,7 @@ function Set-AadApplicationKeyRotator {
     }
 
     #KeyVault
-    Write-Debug "Check if Key Vault '$KeyVaultName' already exist"
+    Write-Verbose "Check if Key Vault '$KeyVaultName' already exist"
     $keyVault = Get-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
     if (!$keyVault) {
         Write-Error "Key Vault '$KeyVaultName' doesn't exist. First create a Key Vault."
@@ -40,7 +47,7 @@ function Set-AadApplicationKeyRotator {
     $aspTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\AppServicePlan.json"
     $aspDeploymentName = ((Get-ChildItem $aspTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
-    .\New-AppServicePlan.ps1 `
+    New-AppServicePlan `
         -ResourceGroupName $ResourceGroupName `
         -AppServicePlanName $appServicePlanName `
         -Location $Location `
@@ -55,7 +62,7 @@ function Set-AadApplicationKeyRotator {
         $applicationInsightsTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\ApplicationInsights.json"
         $applicationInsightsDeploymentName = ((Get-ChildItem $applicationInsightsTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
-        .\New-ApplicationInsights.ps1 `
+        New-ApplicationInsights `
             -ResourceGroupName $ResourceGroupName `
             -ApplicationInsightsName $applicationInsightsName `
             -Location $Location `
@@ -63,23 +70,25 @@ function Set-AadApplicationKeyRotator {
             -DeploymentName $applicationInsightsDeploymentName
     }
     else {
-        Write-Debug 'Create Application Insights is false so check if Application Insights '$applicationInsightsName' already exist'
+        Write-Verbose "Create Application Insights is false so check if Application Insights '$applicationInsightsName' already exist"
         $applicationInsights = Get-AzureRmApplicationInsights -Name $applicationInsightsName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
         
         if ($applicationInsights) {
-            Write-Information 'Application Insights '$applicationInsightsName' exists so remove it'
-            Remove-AzureRmApplicationInsights -ResourceGroupName $ResourceGroupName -Name $applicationInsightsName -Confirm
+            Write-Information "Application Insights '$applicationInsightsName' exists so remove it"
+            Remove-AzureRmApplicationInsights -ResourceGroupName $ResourceGroupName -Name $applicationInsightsName
         }
         else {
             Write-Information "Application Insights '$applicationInsightsName' doesn't exist so do nothing"
         }
+
+        $applicationInsightsName = $null
     }
 
     # Storage Account
     $storageAccountTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\StorageAccount.json"
     $storageAccountDeploymentName = ((Get-ChildItem $storageAccountTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
-    .\New-StorageAccount.ps1 `
+    New-StorageAccount `
         -ResourceGroupName $ResourceGroupName `
         -StorageAccountName $storageAccountName `
         -Location $Location `
@@ -92,7 +101,7 @@ function Set-AadApplicationKeyRotator {
     $functionAppTemplateFile = Join-Path -Path $PSScriptRoot -ChildPath ".\ARM-Templates\FunctionApp.json"
     $functionAppDeploymentName = ((Get-ChildItem $functionAppTemplateFile).BaseName + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm'))
 
-    .\New-FunctionApp.ps1 `
+    New-FunctionApp `
         -ResourceGroupName $ResourceGroupName `
         -FunctionAppName $functionAppName `
         -Location $Location `
@@ -102,7 +111,7 @@ function Set-AadApplicationKeyRotator {
         -TemplateFile $functionAppTemplateFile `
         -DeploymentName $functionAppDeploymentName
 
-    Write-Debug 'Sleep because function app is slow to start up'
+    Write-Verbose 'Sleep because function app is slow to start up'
     Start-Sleep 30
 
     # Get ARM output variables
@@ -117,7 +126,7 @@ function Set-AadApplicationKeyRotator {
     # Publish Azure AD Application Key Rotator from the artifacts folder
     Write-Information "Publish the Application Key Rotator to the Function App"
     $zipFilePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, ".\..\..\Artifacts\ApplicationKeyRotator.zip"))
-    .\Publish-AppService.ps1 `
+    Publish-AppService `
         -ResourceGroupName $ResourceGroupName `
         -ZipFilePath $zipFilePath `
         -AppServiceName $functionAppName
@@ -129,3 +138,5 @@ function Set-AadApplicationKeyRotator {
         -ObjectId $functionAppSpId `
         -PermissionsToSecrets Get, Set
 }
+
+Export-ModuleMember -Function Set-AzureAdApplicationKeyRotator
