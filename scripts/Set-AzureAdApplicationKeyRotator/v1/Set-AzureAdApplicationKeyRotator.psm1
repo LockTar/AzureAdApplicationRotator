@@ -125,7 +125,7 @@ function Set-AzureAdApplicationKeyRotator {
 
     # Publish Azure AD Application Key Rotator from the artifacts folder
     Write-Information "Publish the Application Key Rotator to the Function App"
-    $zipFilePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, ".\..\..\Artifacts\ApplicationKeyRotator.zip"))
+    $zipFilePath = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, ".\Artifacts\ApplicationKeyRotator.zip"))
     Publish-AppService `
         -ResourceGroupName $ResourceGroupName `
         -ZipFilePath $zipFilePath `
