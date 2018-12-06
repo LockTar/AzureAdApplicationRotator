@@ -111,8 +111,8 @@ function Set-AzureAdApplicationKeyRotator {
         -TemplateFile $functionAppTemplateFile `
         -DeploymentName $functionAppDeploymentName
 
-    Write-Verbose 'Sleep because function app is slow to start up'
-    Start-Sleep 30
+    Write-Information 'Sleep 60 sec because function app is slow to start up'
+    Start-Sleep 60
 
     # Get ARM output variables
     Write-Information "Retrieve Function App MSI SP from ARM output"
