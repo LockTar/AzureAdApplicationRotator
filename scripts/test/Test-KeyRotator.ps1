@@ -58,7 +58,9 @@ try {
         -ResourceGroupName $resourceGroupName `
         -KeyVaultName $keyVaultName `
         -Location $location `
-        -CreateApplicationInsights $createApplicationInsights    
+        -CreateApplicationInsights $createApplicationInsights `
+        -Verbose `
+        -InformationAction Continue
 
 
     # Add access policy for current user
@@ -85,7 +87,9 @@ try {
     Remove-AzureAdApplicationKeyRotator `
         -ResourceGroupName $resourceGroupName `
         -KeyVaultName $keyVaultName `
-        -Location $location    
+        -Location $location `
+        -Verbose `
+        -InformationAction Continue
 
     Write-Information "Remove Resource Group '$resourceGroupName'"
     Remove-AzureRmResourceGroup -Name $resourceGroupName -Force
