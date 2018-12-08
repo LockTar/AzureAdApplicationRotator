@@ -21,6 +21,7 @@ Import-Module $PSScriptRoot\scripts\Remove-AzureAdApplicationKeyRotator.psm1
 Remove-AzureAdApplicationKeyRotator `
     -ResourceGroupName $resourceGroupName `
     -KeyVaultName $keyVaultName `
-    -Location $location
+    -Location $location `
+    -InformationAction Continue
 
 Trace-VstsLeavingInvocation $MyInvocation

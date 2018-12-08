@@ -24,6 +24,7 @@ Set-AzureAdApplicationKeyRotator `
     -ResourceGroupName $resourceGroupName `
     -KeyVaultName $keyVaultName `
     -Location $location `
-    -CreateApplicationInsights $createApplicationInsights
+    -CreateApplicationInsights $createApplicationInsights `
+    -InformationAction Continue
 
 Trace-VstsLeavingInvocation $MyInvocation
