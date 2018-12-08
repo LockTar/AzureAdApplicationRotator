@@ -9,11 +9,40 @@ For in example letting users login into a web application with his or her AD acc
 
 ## Get Started
 
-### Automated
+### Automated via Azure DevOps extension
 
-```powershell
-# Coming soon...
-```
+1. Install the extension from the marketplace.
+2. Create an Azure Resource Manager Service Connection in your Azure DevOps Team Project manually or let Azure DevOps create one for you.
+3. Go to the [Azure portal](https://portal.azure.com)
+4. In the Azure portal, navigate to **App Registrations**
+5. Select the created app registration. If you can't find it, you probably don't have the right permissions. You can still find the app registration by changing the filter dropdown box to **All apps**.
+6. Check the **Owners** of the selected app registration (application). If your not an owner, find an **owner** or a **Global Administrator** (you will need a Global Admin in the next steps).
+7. Set the **Required Permissions** at least with the following Resource Access **Windows Azure Active Directory (Microsoft.Azure.ActiveDirectory)** with the **application** permission **Read directory data**. When you save this, this will result in the following array in the **manifest**:
+
+    ```json
+    "requiredResourceAccess": [
+      {
+        "resourceAppId": "00000002-0000-0000-c000-000000000000",
+        "resourceAccess": [
+          {
+            "id": "5778995a-e1bf-45b8-affa-663a9f3f4d04",
+            "type": "Role"
+          }
+        ]
+      }
+    ]
+    ```
+8. **Very important** Request an Azure Global Administrator to hit the button **Grant permissions** in the **Required Permissions** view. This only has to be done once.
+9. Create a Release pipeline in your Team Project.
+10. Create a Resource Group in your Release Pipeline.
+11. Create a Key Vault in your Release Pipeline (in example with PowerShell or Azure CLI).
+12. Use the 'Set Azure AD Application Key Rotator' task after the Key Vault creation task in your Release Pipeline.
+13. Create a key for an Azure AD application via the portal or via PowerShell with a short live span (ie 1 day). This key will be rotated so a short live span is preferred. The expired keys will be cleaned up by the rotator.
+14. Store the created key in a KeyVault with the following PowerShell:
+
+    ```powershell
+    # Coming soon...
+    ```
 
 ### Manual steps
 
