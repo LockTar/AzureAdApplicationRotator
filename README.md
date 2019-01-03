@@ -156,3 +156,5 @@ Contents of the `local.settings.json`:
   }
 }
 ```
+
+Run the `\scripts\test\Test-KeyRotator.ps1` file to generate some test environment and to test your code in the cloud.
