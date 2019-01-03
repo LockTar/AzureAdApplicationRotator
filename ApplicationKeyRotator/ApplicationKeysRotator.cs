@@ -13,7 +13,7 @@ namespace ApplicationKeyRotator
     public static class ApplicationKeysRotator
     {
         [FunctionName("AllApplicationIds")]
-        public static async Task RunAllApplicationIds([TimerTrigger("%ScheduleAppSetting%")]TimerInfo myTimer, ILogger log,
+        public static async Task RunAllApplicationIds([TimerTrigger("%Schedule%")]TimerInfo myTimer, ILogger log,
             [Inject] IRotatorWorker worker)
         {
             worker.Log = log;

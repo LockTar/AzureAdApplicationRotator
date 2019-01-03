@@ -152,7 +152,7 @@ Contents of the `local.settings.json`:
     "DefaultKeyName": "RotatedKey",
     "KeyDurationInMinutes": 2,
 
-    "ScheduleAppSetting": "0 */1 * * * *"
+    "Schedule": "0 */1 * * * *"
   }
 }
 ```

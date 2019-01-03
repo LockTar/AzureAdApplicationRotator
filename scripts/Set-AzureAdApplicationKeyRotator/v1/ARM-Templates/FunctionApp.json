@@ -73,7 +73,7 @@
                         "value": "8.11.1"
                     },
                     {
-                        "name": "ScheduleAppSetting",
+                        "name": "Schedule",
                         "value": "[parameters('schedule')]"
                     }
                 ]
