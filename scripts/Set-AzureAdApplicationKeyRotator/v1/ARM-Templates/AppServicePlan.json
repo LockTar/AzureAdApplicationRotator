@@ -25,22 +25,22 @@
             }
         }
     },
-    "resources": [
-        {
-            "apiVersion": "2016-09-01",
-            "name": "[parameters('appServicePlanName')]",
-            "type": "Microsoft.Web/serverfarms",
-            "location": "[parameters('location')]",
-            "properties": {
-                "name": "[parameters('appServicePlanName')]"
-            },
-            "sku": {
-                "name" : "[concat(parameters('family'),parameters('pricingTier'))]",
-                "tier": "Dynamic",
-                "size": "[concat(parameters('family'),parameters('pricingTier'))]",
-                "family": "[parameters('family')]",
-                "capacity": "[parameters('instances')]"
-            }
-        }
-    ]
+    "resources": [{
+        "type": "Microsoft.Web/serverfarms",
+        "kind": "functionapp",
+        "name": "[parameters('appServicePlanName')]",
+        "apiVersion": "2016-09-01",
+        "location": "[parameters('location')]",
+        "properties": {
+            "name": "[parameters('appServicePlanName')]"
+        },
+        "sku": {
+            "name": "[concat(parameters('family'),parameters('pricingTier'))]",
+            "tier": "Dynamic",
+            "size": "[concat(parameters('family'),parameters('pricingTier'))]",
+            "family": "[parameters('family')]",
+            "capacity": "[parameters('instances')]"
+        },
+        "dependsOn": []
+    }]
 }
