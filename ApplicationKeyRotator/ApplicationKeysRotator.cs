@@ -13,18 +13,16 @@ namespace ApplicationKeyRotator
     public static class ApplicationKeysRotator
     {
         [FunctionName("AllApplicationIds")]
-        public static async Task<IActionResult> RunAllApplicationIds([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log,
+        public static async Task RunAllApplicationIds([TimerTrigger("%ScheduleAppSetting%")]TimerInfo myTimer, ILogger log,
             [Inject] IRotatorWorker worker)
         {
             worker.Log = log;
 
             await worker.RotateAll();
-
-            return new OkResult();
         }
 
         [FunctionName("ByApplicationObjectId")]
-        public static async Task<IActionResult> RunByApplicationObjectId([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequest req, ILogger log,
+        public static async Task<IActionResult> RunByApplicationObjectId([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)]HttpRequest req, ILogger log,
             [Inject] IRotatorWorker worker,
             [Inject] IApplicationService applicationService)
         {
