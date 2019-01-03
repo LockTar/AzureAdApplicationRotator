@@ -2,6 +2,7 @@ $VerbosePreference = "Continue"
 $InformationPreference = "Continue"
 $ErrorActionPreference = "Stop"
 
+$removeAllAfterCreate = $false
 
 $baseName = "AppKeyRotator"
 $environment = "Test"
@@ -81,20 +82,21 @@ finally {
     Remove-Module Set-AzureAdApplicationKeyRotator
 }
 
+if ($removeAllAfterCreate) {
+    try {
+        # Remove/clean up of whole Resource Group
+        Import-Module $PSScriptRoot\..\Remove-AzureAdApplicationKeyRotator\v1\Remove-AzureAdApplicationKeyRotator.psm1
+        Remove-AzureAdApplicationKeyRotator `
+            -ResourceGroupName $resourceGroupName `
+            -KeyVaultName $keyVaultName `
+            -Location $location `
+            -Verbose `
+            -InformationAction Continue
 
-try {
-    # Remove/clean up of whole Resource Group
-    Import-Module $PSScriptRoot\..\Remove-AzureAdApplicationKeyRotator\v1\Remove-AzureAdApplicationKeyRotator.psm1
-    Remove-AzureAdApplicationKeyRotator `
-        -ResourceGroupName $resourceGroupName `
-        -KeyVaultName $keyVaultName `
-        -Location $location `
-        -Verbose `
-        -InformationAction Continue
-
-    Write-Information "Remove Resource Group '$resourceGroupName'"
-    Remove-AzureRmResourceGroup -Name $resourceGroupName -Force
-}
-finally {
-    Remove-Module Remove-AzureAdApplicationKeyRotator
+        Write-Information "Remove Resource Group '$resourceGroupName'"
+        Remove-AzureRmResourceGroup -Name $resourceGroupName -Force
+    }
+    finally {
+        Remove-Module Remove-AzureAdApplicationKeyRotator
+    }
 }
