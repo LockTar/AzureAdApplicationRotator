@@ -60,6 +60,15 @@
             "helpMarkDown": "Provide the name of the Azure Key Vault where the secrets are stored."
         },
         {
+            "name": "schedule",
+            "type": "string",
+            "label": "Rotation schedule",
+            "defaultValue": "0 */5 * * * *",
+            "required": true,
+            "groupName": "AzureDetails",
+            "helpMarkDown": "A CRON expression for the schedule to rotate all the keys. See in example the following documentation: https://docs.microsoft.com/nl-nl/azure/azure-functions/functions-bindings-timer#cron-expressions"
+        },
+        {
             "name": "createApplicationInsights",
             "type": "boolean",
             "label": "Create Application Insights",

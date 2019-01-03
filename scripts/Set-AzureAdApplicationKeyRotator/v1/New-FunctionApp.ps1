@@ -11,6 +11,8 @@ function New-FunctionApp {
         [string]$StorageAccountName,
         [Parameter(Mandatory=$true)]
         [string]$AppServicePlanName,
+        [Parameter(Mandatory=$true)]
+        [string]$Schedule,
         [Parameter(Mandatory=$false)]
         [string]$ApplicationInsightsName,
         [Parameter(Mandatory=$true)]
@@ -27,6 +29,7 @@ function New-FunctionApp {
     $parametersARM.Add("location", $Location)
     $parametersARM.Add("storageAccountName", $StorageAccountName)
     $parametersARM.Add("appServicePlanName", $AppServicePlanName)
+    $parametersARM.Add("schedule", $Schedule)
     $parametersARM.Add("appInsightsName", $ApplicationInsightsName)
 
     # Deploy with ARM

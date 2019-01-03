@@ -19,6 +19,9 @@
             "metadata": {
                 "description": "Application Insight Name"
             }
+        },
+        "schedule": {
+            "type": "string"
         }
     },
     "resources": [
@@ -70,6 +73,10 @@
                         {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                             "value": "[if(empty(parameters('appInsightsName')),'', reference(concat('microsoft.insights/components/', parameters('appInsightsName')),'2014-04-01').InstrumentationKey)]"
+                        },
+                        {
+                            "name": "ScheduleAppSetting",
+                            "value": "[parameters('schedule')]"
                         }
                     ]
                 }

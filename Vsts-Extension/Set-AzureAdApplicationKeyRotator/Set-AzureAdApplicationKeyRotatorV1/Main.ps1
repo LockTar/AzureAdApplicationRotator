@@ -4,6 +4,7 @@ Trace-VstsEnteringInvocation $MyInvocation
 $resourceGroupName = Get-VstsInput -Name resourceGroupName -Require
 $location = Get-VstsInput -Name location -Require
 $keyVaultName = Get-VstsInput -Name keyVaultName -Require
+$schedule = Get-VstsInput -Name schedule -Require
 $createApplicationInsights = Get-VstsInput -Name createApplicationInsights -AsBool
 
 # Initialize Azure Connection
@@ -16,6 +17,7 @@ Write-Verbose "Input variables are: "
 Write-Verbose "resourceGroupName: $resourceGroupName"
 Write-Verbose "keyVaultName: $keyVaultName"
 Write-Verbose "location: $location"
+Write-Verbose "schedule: $schedule"
 Write-Verbose "createApplicationInsights: $createApplicationInsights"
 
 Import-Module $PSScriptRoot\scripts\Set-AzureAdApplicationKeyRotator.psm1
@@ -24,6 +26,7 @@ Set-AzureAdApplicationKeyRotator `
     -ResourceGroupName $resourceGroupName `
     -KeyVaultName $keyVaultName `
     -Location $location `
+    -Schedule $schedule `
     -CreateApplicationInsights $createApplicationInsights `
     -InformationAction Continue
 

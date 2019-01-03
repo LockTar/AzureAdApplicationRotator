@@ -11,6 +11,8 @@ function Set-AzureAdApplicationKeyRotator {
         [string]$Location,
         [Parameter(Mandatory)]
         [string]$KeyVaultName,
+        [Parameter(Mandatory)]
+        [string]$Schedule,
         [bool]$CreateApplicationInsights
     )
 
@@ -107,6 +109,7 @@ function Set-AzureAdApplicationKeyRotator {
         -Location $Location `
         -StorageAccountName $storageAccountName `
         -AppServicePlanName $appServicePlanName `
+        -Schedule $Schedule `
         -ApplicationInsightsName $applicationInsightsName `
         -TemplateFile $functionAppTemplateFile `
         -DeploymentName $functionAppDeploymentName
