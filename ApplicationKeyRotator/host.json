@@ -1,7 +1,15 @@
 {
   "version": "2.0",
-  "tracing": {
-    "consoleLevel": "info",
-    "fileLoggingMode": "debugOnly"
+  "logging": {
+    "fileLoggingMode": "debugOnly",
+    "logLevel": {
+      "default": "Information"
+    },
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "maxTelemetryItemsPerSecond": 5
+      }
+    }
   }
 }
