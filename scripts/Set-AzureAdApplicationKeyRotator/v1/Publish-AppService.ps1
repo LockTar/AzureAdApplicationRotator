@@ -42,15 +42,18 @@ function Publish-AppService {
         Authorization = $basicAuthValue
     }
 
-    # Use Kudu deploy
-    Write-Verbose "Publish the zip to the App Service"
-    Invoke-WebRequest -UseBasicParsing -Uri https://$AppServiceName.scm.azurewebsites.net/api/zipdeploy -Headers $headers `
-        -InFile $ZipFilePath -ContentType "multipart/form-data" -Method Post
-
-    Write-Verbose "Start the App Service"
-    $null = Start-AzureRmWebApp `
-        -ResourceGroupName $ResourceGroupName `
-        -Name $AppServiceName
-
+    try {
+        # Use Kudu deploy
+        Write-Verbose "Publish the zip to the App Service"
+        Invoke-WebRequest -UseBasicParsing -Uri https://$AppServiceName.scm.azurewebsites.net/api/zipdeploy -Headers $headers `
+            -InFile $ZipFilePath -ContentType "multipart/form-data" -Method Post
+    }
+    finally {
+        Write-Verbose "Start the App Service"
+        $null = Start-AzureRmWebApp `
+            -ResourceGroupName $ResourceGroupName `
+            -Name $AppServiceName
+    }
+    
     Write-Verbose "App Service deployment complete"
 }
