@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Azure.KeyVault;
+﻿using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ApplicationKeyRotator.KeyVaults
 {
@@ -32,15 +33,23 @@ namespace ApplicationKeyRotator.KeyVaults
             Log.LogDebug("Get all secrets from KeyVault");
             _allSecrets = new List<SecretItem>();
 
-            Log.LogDebug($"Get secrets from '{_keyVaultUrl}'");
-            var secretsPage = await _keyVaultClient.GetSecretsAsync(_keyVaultUrl);
-            _allSecrets.AddRange(secretsPage.ToList());
-
-            while (!string.IsNullOrWhiteSpace(secretsPage.NextPageLink))
+            try
             {
-                Log.LogDebug($"Found another page with secrets. Get secrets from '{secretsPage.NextPageLink}'");
-                secretsPage = await _keyVaultClient.GetSecretsAsync(secretsPage.NextPageLink);
+                Log.LogDebug($"Get secrets from '{_keyVaultUrl}'");
+                var secretsPage = await _keyVaultClient.GetSecretsAsync(_keyVaultUrl);
                 _allSecrets.AddRange(secretsPage.ToList());
+
+                while (!string.IsNullOrWhiteSpace(secretsPage.NextPageLink))
+                {
+                    Log.LogDebug($"Found another page with secrets. Get secrets from '{secretsPage.NextPageLink}'");
+                    secretsPage = await _keyVaultClient.GetSecretsAsync(secretsPage.NextPageLink);
+                    _allSecrets.AddRange(secretsPage.ToList());
+                }
+            }
+            catch (HttpRequestException)
+            {
+                Log.LogError("Can't get secrets from Key Vault.");
+                throw;
             }
 
             Log.LogDebug($"Found in total {_allSecrets.Count} secret(s)");
