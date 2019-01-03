@@ -6,7 +6,7 @@ $ErrorActionPreference = "Stop"
 $baseName = "AppKeyRotator"
 $environment = "Test"
 $location = "westeurope"
-$createApplicationInsights = $false
+$createApplicationInsights = $true
 
 $resourceGroupName = "$baseName-$environment"
 $keyVaultName = $baseName + $environment
