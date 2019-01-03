@@ -49,6 +49,10 @@
                         "value": "[if(empty(parameters('appInsightsName')),'', reference(concat('microsoft.insights/components/', parameters('appInsightsName')),'2014-04-01').InstrumentationKey)]"
                     },
                     {
+                        "name": "AzureWebJobsDashboard",
+                        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName')), '2017-10-01').keys[0].value)]"
+                    },
+                    {
                         "name": "AzureWebJobsStorage",
                         "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName')), '2017-10-01').keys[0].value)]"
                     },
@@ -71,6 +75,34 @@
                     {
                         "name": "WEBSITE_NODE_DEFAULT_VERSION",
                         "value": "8.11.1"
+                    },
+                    {
+                        "name": "LocalDevelopment",
+                        "value": "false"
+                    },
+                    {
+                        "name": "TenantId",
+                        "value": ""
+                    },
+                    {
+                        "name": "ClientId",
+                        "value": ""
+                    },
+                    {
+                        "name": "ClientSecret",
+                        "value": ""
+                    },
+                    {
+                        "name": "KeyVaultUrl",
+                        "value": "https://appkeyrotatortest.vault.azure.net/"
+                    },
+                    {
+                        "name": "DefaultKeyName",
+                        "value": "RotatedKey"
+                    },
+                    {
+                        "name": "KeyDurationInMinutes",
+                        "value": "2"
                     },
                     {
                         "name": "Schedule",
