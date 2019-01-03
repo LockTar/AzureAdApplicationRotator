@@ -58,6 +58,7 @@ try {
         -ResourceGroupName $resourceGroupName `
         -KeyVaultName $keyVaultName `
         -Location $location `
+        -Schedule "0 */1 * * * *" `
         -CreateApplicationInsights $createApplicationInsights `
         -Verbose `
         -InformationAction Continue
