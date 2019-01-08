@@ -139,7 +139,7 @@ function Set-AzureAdApplicationKeyRotator {
     Set-AzureRmKeyVaultAccessPolicy `
         -VaultName $KeyVaultName `
         -ObjectId $functionAppSpId `
-        -PermissionsToSecrets Get, Set
+        -PermissionsToSecrets Get, List, Set
 }
 
 Export-ModuleMember -Function Set-AzureAdApplicationKeyRotator

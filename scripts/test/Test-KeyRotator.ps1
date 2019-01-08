@@ -70,7 +70,7 @@ try {
     Set-AzureRmKeyVaultAccessPolicy `
         -VaultName $keyVaultName `
         -ObjectId $(Get-AzureRmADUser -UserPrincipalName $(Get-AzureRmContext).Account.Id).Id `
-        -PermissionsToSecrets Get, Set
+        -PermissionsToSecrets Get, List, Set
 
     # Add a test secret
     Write-Information "Add a test secret so we can test the rotation"
