@@ -39,6 +39,7 @@ function New-FunctionApp {
     $parametersARM.Add("defaultKeyName", $DefaultKeyName)
     $parametersARM.Add("keyDurationInMinutes", $KeyDurationInMinutes)
     $parametersARM.Add("appInsightsName", $ApplicationInsightsName)
+    $parametersARM.Add("tenantId", $tenantId)
 
     # Deploy with ARM
     Write-Verbose "Deploy ARM template with deploymentname $DeploymentName"
