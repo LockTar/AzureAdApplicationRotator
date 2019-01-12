@@ -64,18 +64,7 @@ For in example letting users login into a web application with his or her AD acc
     }
     ```
 12. Create a new Azure AD Application (App Registration) or use an existing in your tenant that needs rotation. You will get an `applicationId` and a `ObjectId` for this. You can see this in the Azure portal.
-13. Set the rotator service principal (MSI) as owner of that application.
-    ```powershell
-    # Get application that needs key rotation
-    $appObjectIdThatNeedsRotation = "PASTE OBJECTID (NOT APPLICATIONID) OF YOUR APPLICATION THAT NEEDS ROTATION HERE"
-
-    Get-AzureRmADApplication -ObjectId $appObjectIdThatNeedsRotation
-    Get-AzureRmADApplication -ObjectId $appObjectIdThatNeedsRotation | Get-AzureRmADServicePrincipal
-
-    # Add MSI as owner of the application
-    Add-AzureADApplicationOwner -ObjectId $appObjectIdThatNeedsRotation -RefObjectId $rotatorAppSpId
-    Get-AzureADApplicationOwner -ObjectId $appObjectIdThatNeedsRotation
-    ```
+13. Set the rotator service principal (MSI) as owner of that application. See [How to set correct AD permissions of MSI](#How-to-set-correct-AD-permissions-of-MSI) for more information.
 14. Create a placeholder secret in the KeyVault where the keys of your application will be rotated with the following PowerShell:
     ```powershell
     # Add a test secret
@@ -97,19 +86,7 @@ For in example letting users login into a web application with his or her AD acc
     $rotatorAppSpId = $(Get-AzureRmADServicePrincipal -SearchString $functionAppName | Where-Object { $_.DisplayName -eq $functionAppName }).Id
     ```
 3. Create a new Azure AD Application (App Registration) or use an existing in your tenant that needs rotation. You will get an `applicationId` and a `ObjectId` for this. You can see this in the Azure portal.
-4. Set the rotator service principal (MSI) as owner of that application.
-
-    ```powershell
-    # Get application that needs key rotation
-    $appObjectIdThatNeedsRotation = "PASTE OBJECTID (NOT APPLICATIONID) OF YOUR APPLICATION THAT NEEDS ROTATION HERE"
-
-    Get-AzureRmADApplication -ObjectId $appObjectIdThatNeedsRotation
-    Get-AzureRmADApplication -ObjectId $appObjectIdThatNeedsRotation | Get-AzureRmADServicePrincipal
-
-    # Add MSI as owner of the application
-    Add-AzureADApplicationOwner -ObjectId $appObjectIdThatNeedsRotation -RefObjectId $rotatorAppSpId
-    Get-AzureADApplicationOwner -ObjectId $appObjectIdThatNeedsRotation
-    ```
+4. Set the rotator service principal (MSI) as owner of that application. See [How to set correct AD permissions of MSI](#How-to-set-correct-AD-permissions-of-MSI) for more information.
 5. Create a placeholder secret in the KeyVault where the keys of your application will be rotated with the following PowerShell:
     ```powershell
     # Add a test secret
@@ -158,3 +135,69 @@ Contents of the `local.settings.json`:
 ```
 
 Run the `\scripts\test\Test-KeyRotator.ps1` file to generate some test environment and to test your code in the cloud.
+
+## FAQ
+
+### How to set correct AD permissions of MSI
+
+The Azure Function App rotator runs under Managed Service Identity (MSI). This MSI is generated when you create the Function app. It is removed when you remove the Function app or when you refresh the MSI of the active Function app. The MSI **must** have AD permissions to **manage app registrations** (Manage apps that this app creates or owns) where it is owner on.\
+\
+You can check if the MSI already has the right permissions with the [Azure AD Graph Explorer](https://graphexplorer.azurewebsites.net). Login to the explorer and execute the following url to get the app roles of the MSI:\
+`https://graph.windows.net/<YOUR TENANT ID HERE>/servicePrincipals/<YOUR MSI ID HERE>/appRoleAssignments`
+
+The following script will set the right permissions. Because this app role need admin consent, it needs to be executed by an **Global Administrator** of your tenant.
+
+```powershell
+Connect-AzureAD
+$msiObjectId = "YOUR MSI OBJECT ID HERE"
+
+$adgraph = Get-AzureADServicePrincipal -Filter "AppId eq '00000002-0000-0000-c000-000000000000'"
+Write-Host "-ResourceId $($adgraph.ObjectId)"
+
+# Manage apps that this app creates or owns (Role: Application.ReadWrite.OwnedBy)
+$rdscope = "824c81eb-e3f8-4ee6-8f6d-de7f50d565b7"
+
+# Read directory data (Role: Directory.Read.All)
+$rdscope2 = "5778995a-e1bf-45b8-affa-663a9f3f4d04"
+
+try
+{
+    New-AzureADServiceAppRoleAssignment -Id $rdscope -PrincipalId $msiObjectId -ObjectId $msiObjectId -ResourceId $adgraph.ObjectId
+    New-AzureADServiceAppRoleAssignment -Id $rdscope2 -PrincipalId $msiObjectId -ObjectId $msiObjectId -ResourceId $adgraph.ObjectId
+}
+#the New-AzureADServiceAppRoleAssignment is throwing the following exception
+#the message is Unauthorized, but the assignment is applied!
+catch [Microsoft.Open.AzureAD16.Client.ApiException]
+{
+    #This error appears when the assignment already has been done
+    if ($Error[0].Exception.Message.Contains("BadRequest"))
+    {
+        Write-Output "The Role assignment was already applied. Check if all roles are applied!"
+    }
+}
+
+Write-Output "The Role assignment:"
+Get-AzureADServiceAppRoleAssignedTo -ObjectId $msiObjectId
+```
+
+Next to this, the MSI must be **Owner** of the app registration from which you want to rotate the key from otherwise it can't create new keys. You can do this with the following script. The person or service principal that runs this script needs to be **owner of the app registration** in order to set a new owner.
+
+```powershell
+Connect-AzureAD
+Connect-AzureRmAccount
+
+$msiObjectId = "YOUR MSI OBJECT ID HERE"
+# Get application that needs key rotation
+$appObjectIdThatNeedsRotation = "PASTE OBJECTID (NOT APPLICATIONID) OF YOUR APPLICATION THAT NEEDS ROTATION HERE"
+
+Get-AzureRmADApplication -ObjectId $appObjectIdThatNeedsRotation
+Get-AzureRmADApplication -ObjectId $appObjectIdThatNeedsRotation | Get-AzureRmADServicePrincipal
+
+# Add MSI as owner of the application
+Add-AzureADApplicationOwner -ObjectId $appObjectIdThatNeedsRotation -RefObjectId $msiObjectId
+Get-AzureADApplicationOwner -ObjectId $appObjectIdThatNeedsRotation
+```
+
+### Forbidden to get active directory application with id
+
+See [How to set correct AD permissions of MSI](#How-to-set-correct-AD-permissions-of-MSI) for more information.
