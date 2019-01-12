@@ -13,8 +13,14 @@ function New-FunctionApp {
         [string]$AppServicePlanName,
         [Parameter(Mandatory=$true)]
         [string]$Schedule,
+        [Parameter(Mandatory=$true)]
+        [string]$DefaultKeyName,
+        [Parameter(Mandatory=$true)]
+        [int]$KeyDurationInMinutes,
         [Parameter(Mandatory=$false)]
         [string]$ApplicationInsightsName,
+        [Parameter(Mandatory=$true)]
+        [string]$TenantId,
         [Parameter(Mandatory=$true)]
         [string]$TemplateFile,
         [Parameter(Mandatory=$true)]
@@ -30,6 +36,8 @@ function New-FunctionApp {
     $parametersARM.Add("storageAccountName", $StorageAccountName)
     $parametersARM.Add("appServicePlanName", $AppServicePlanName)
     $parametersARM.Add("schedule", $Schedule)
+    $parametersARM.Add("defaultKeyName", $DefaultKeyName)
+    $parametersARM.Add("keyDurationInMinutes", $KeyDurationInMinutes)
     $parametersARM.Add("appInsightsName", $ApplicationInsightsName)
 
     # Deploy with ARM

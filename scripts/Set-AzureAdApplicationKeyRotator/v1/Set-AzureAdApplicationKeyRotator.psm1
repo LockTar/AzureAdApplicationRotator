@@ -5,15 +5,21 @@ $script:azureRMProfileModule = $null
 function Set-AzureAdApplicationKeyRotator {
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$true)]
         [string]$ResourceGroupName,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$true)]
         [string]$Location,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$true)]
         [string]$KeyVaultName,
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory=$true)]
         [string]$Schedule,
-        [bool]$CreateApplicationInsights
+        [Parameter(Mandatory=$true)]
+        [string]$DefaultKeyName,
+        [Parameter(Mandatory=$true)]
+        [int]$KeyDurationInMinutes,
+        [bool]$CreateApplicationInsights,
+        [Parameter(Mandatory=$true)]
+        [string]$TenantId
     )
 
     # Dot source the private functions.
@@ -110,7 +116,10 @@ function Set-AzureAdApplicationKeyRotator {
         -StorageAccountName $storageAccountName `
         -AppServicePlanName $appServicePlanName `
         -Schedule $Schedule `
+        -DefaultKeyName $DefaultKeyName `
+        -KeyDurationInMinutes $KeyDurationInMinutes `
         -ApplicationInsightsName $applicationInsightsName `
+        -TenantId $TenantId `
         -TemplateFile $functionAppTemplateFile `
         -DeploymentName $functionAppDeploymentName
 

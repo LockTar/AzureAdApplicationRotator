@@ -69,6 +69,24 @@
             "helpMarkDown": "A CRON expression for the schedule to rotate all the keys. See in example the following documentation: https://docs.microsoft.com/nl-nl/azure/azure-functions/functions-bindings-timer#cron-expressions"
         },
         {
+            "name": "defaultKeyName",
+            "type": "string",
+            "label": "Default Key name",
+            "defaultValue": "RotatedKey",
+            "required": true,
+            "groupName": "AzureDetails",
+            "helpMarkDown": "The name of the key in the app registration. A number will be added to the end of the name for better debugging."
+        },
+        {
+            "name": "keyDurationInMinutes",
+            "type": "string",
+            "label": "Key duration minutes",
+            "defaultValue": "120",
+            "required": true,
+            "groupName": "AzureDetails",
+            "helpMarkDown": "Number of minutes that a rotated key is valid. Make sure that a rotated key is longer valid than the timer schedule otherwise you will end up with app registrations that has no active keys."
+        },
+        {
             "name": "createApplicationInsights",
             "type": "boolean",
             "label": "Create Application Insights",

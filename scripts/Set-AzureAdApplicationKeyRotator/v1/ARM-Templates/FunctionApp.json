@@ -22,6 +22,15 @@
         },
         "schedule": {
             "type": "string"
+        },
+        "defaultKeyName": {
+            "type": "string"
+        },
+        "keyDurationInMinutes": {
+            "type": "int"
+        },
+        "tenantId": {
+            "type": "string"
         }
     },
     "resources": [{
@@ -82,7 +91,7 @@
                     },
                     {
                         "name": "TenantId",
-                        "value": ""
+                        "value": "[parameters('tenantId')]"
                     },
                     {
                         "name": "ClientId",
@@ -97,16 +106,16 @@
                         "value": "https://appkeyrotatortest.vault.azure.net/"
                     },
                     {
+                        "name": "Schedule",
+                        "value": "[parameters('schedule')]"
+                    },
+                    {
                         "name": "DefaultKeyName",
-                        "value": "RotatedKey"
+                        "value": "[parameters('defaultKeyName')]"
                     },
                     {
                         "name": "KeyDurationInMinutes",
-                        "value": "2"
-                    },
-                    {
-                        "name": "Schedule",
-                        "value": "[parameters('schedule')]"
+                        "value": "[parameters('keyDurationInMinutes')]"
                     }
                 ]
             },

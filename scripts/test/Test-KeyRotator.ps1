@@ -4,9 +4,13 @@ $ErrorActionPreference = "Stop"
 
 $removeAllAfterCreate = $false
 
+$tenantId = ""
 $baseName = "AppKeyRotator"
 $environment = "Test"
 $location = "westeurope"
+$Schedule = "0 */1 * * * *"
+$DefaultKeyName = "RotatedKey"
+$KeyDurationInMinutes = 120
 $createApplicationInsights = $true
 
 $resourceGroupName = "$baseName-$environment"
@@ -59,8 +63,11 @@ try {
         -ResourceGroupName $resourceGroupName `
         -KeyVaultName $keyVaultName `
         -Location $location `
-        -Schedule "0 */1 * * * *" `
+        -Schedule $Schedule `
+        -DefaultKeyName $DefaultKeyName `
+        -KeyDurationInMinutes $KeyDurationInMinutes `
         -CreateApplicationInsights $createApplicationInsights `
+        -TenantId $tenantId `
         -Verbose `
         -InformationAction Continue
 

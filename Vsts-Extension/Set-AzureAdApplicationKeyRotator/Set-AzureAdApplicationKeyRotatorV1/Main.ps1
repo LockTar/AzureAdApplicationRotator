@@ -5,6 +5,8 @@ $resourceGroupName = Get-VstsInput -Name resourceGroupName -Require
 $location = Get-VstsInput -Name location -Require
 $keyVaultName = Get-VstsInput -Name keyVaultName -Require
 $schedule = Get-VstsInput -Name schedule -Require
+$defaultKeyName = Get-VstsInput -Name defaultKeyName -Require
+$keyDurationInMinutes = Get-VstsInput -Name keyDurationInMinutes -Require -AsInt
 $createApplicationInsights = Get-VstsInput -Name createApplicationInsights -AsBool
 
 # Initialize Azure Connection
@@ -13,12 +15,21 @@ Initialize-PackageProvider
 Initialize-Module -Name "AzureRM.Resources" -RequiredVersion "6.7.0"
 Initialize-AzureRM
 
+# Get tenantid out of the AzureRM connection
+$serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Require
+$serviceName = Get-VstsInput -Name $serviceNameInput -Require
+$endPointRM = Get-VstsEndpoint -Name $serviceName -Require
+$tenantId = $endPointRM.Auth.Parameters.TenantId
+
 Write-Verbose "Input variables are: "
 Write-Verbose "resourceGroupName: $resourceGroupName"
 Write-Verbose "keyVaultName: $keyVaultName"
 Write-Verbose "location: $location"
 Write-Verbose "schedule: $schedule"
+Write-Verbose "defaultKeyName: $defaultKeyName"
+Write-Verbose "keyDurationInMinutes: $keyDurationInMinutes"
 Write-Verbose "createApplicationInsights: $createApplicationInsights"
+Write-Verbose "tenantId: $tenantId"
 
 Import-Module $PSScriptRoot\scripts\Set-AzureAdApplicationKeyRotator.psm1
 
@@ -27,7 +38,10 @@ Set-AzureAdApplicationKeyRotator `
     -KeyVaultName $keyVaultName `
     -Location $location `
     -Schedule $schedule `
+    -DefaultKeyName $DefaultKeyName `
+    -KeyDurationInMinutes $KeyDurationInMinutes `
     -CreateApplicationInsights $createApplicationInsights `
+    -TenantId $tenantId `
     -InformationAction Continue
 
 Trace-VstsLeavingInvocation $MyInvocation
