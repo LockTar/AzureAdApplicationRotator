@@ -31,18 +31,37 @@ namespace ApplicationKeyRotator
             _keyVaultService.Log = Log;
             _applicationService.Log = Log;
 
+            Log.LogInformation("Get all secrets from KeyVault because RotateAll function triggered");
             var allSecrets = await _keyVaultService.GetAllSecretsFromKeyVault();
 
-            foreach (var secret in allSecrets)
+            if (allSecrets.Any())
             {
-                if (secret.Tags != null && secret.Tags.Keys.Contains(ApplicationObjectIdTagName))
-                {
-                    string applicationObjectId = secret.Tags[ApplicationObjectIdTagName];
+                Log.LogInformation($"Found {allSecrets.Count} secret(s) to rotate");
 
-                    var application = await _applicationService.GetApplication(applicationObjectId);
-                    await Rotate(application);
+                foreach (var secret in allSecrets)
+                {
+                    Log.LogDebug($"Check if secret '{secret.Identifier.Name}' has the tag '{ApplicationObjectIdTagName}'");
+
+                    if (secret.Tags != null && secret.Tags.Keys.Contains(ApplicationObjectIdTagName))
+                    {                        
+                        string applicationObjectId = secret.Tags[ApplicationObjectIdTagName];
+                        Log.LogInformation($"Secret '{secret.Identifier.Name}' belongs to application '{applicationObjectId}'. Let's rotate.");
+
+                        var application = await _applicationService.GetApplication(applicationObjectId);
+                        await Rotate(application);
+                    }
+                    else
+                    {
+                        Log.LogInformation($"Secret '{secret.Identifier.Name}' has no or not the right tag so skip rotation");
+                    }
                 }
             }
+            else
+            {
+                Log.LogInformation("No secrets found in the KeyVault to rotate");
+            }
+
+            Log.LogInformation($"All {allSecrets.Count} secret(s) finished with rotating");
         }
 
         public async Task Rotate(IActiveDirectoryApplication application, string keyName = null, int keyDurationInMinutes = 0)
