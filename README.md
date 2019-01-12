@@ -198,6 +198,8 @@ Add-AzureADApplicationOwner -ObjectId $appObjectIdThatNeedsRotation -RefObjectId
 Get-AzureADApplicationOwner -ObjectId $appObjectIdThatNeedsRotation
 ```
 
+**Restart the Function App** so the MSI will pick up the new permissions.
+
 ### Forbidden to get active directory application with id
 
 See [How to set correct AD permissions of MSI](#How-to-set-correct-AD-permissions-of-MSI) for more information.
