@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Management.Fluent;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace ApplicationKeyRotator.Authentication
 {
@@ -7,6 +8,6 @@ namespace ApplicationKeyRotator.Authentication
     {
         ILogger Log { get; set; }
 
-        IAzure GetAzureConnection();
+        Task<Azure.IAuthenticated> GetAzureConnection();
     }
 }

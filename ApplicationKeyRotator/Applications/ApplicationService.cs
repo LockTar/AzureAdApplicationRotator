@@ -25,11 +25,11 @@ namespace ApplicationKeyRotator.Applications
             _authenticationHelper.Log = Log;
             Log.LogDebug($"Searching for active directory application resource id '{id}'");
             
-            var azure = _authenticationHelper.GetAzureConnection();
+            var azure = await _authenticationHelper.GetAzureConnection();
 
             try
             {
-                var application = await azure.AccessManagement.ActiveDirectoryApplications.GetByIdAsync(id);
+                var application = await azure.ActiveDirectoryApplications.GetByIdAsync(id);
 
                 if (application == null)
                 {
