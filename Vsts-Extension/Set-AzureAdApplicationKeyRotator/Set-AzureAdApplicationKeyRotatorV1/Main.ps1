@@ -16,10 +16,9 @@ Initialize-Module -Name "AzureRM.Resources" -RequiredVersion "6.7.0"
 Initialize-AzureRM
 
 # Get tenantid out of the AzureRM connection
-$serviceNameInput = Get-VstsInput -Name ConnectedServiceNameSelector -Require
-$serviceName = Get-VstsInput -Name $serviceNameInput -Require
-$endPointRM = Get-VstsEndpoint -Name $serviceName -Require
-$tenantId = $endPointRM.Auth.Parameters.TenantId
+$serviceName = Get-VstsInput -Name ConnectedServiceNameARM -Require
+$endpoint = Get-VstsEndpoint -Name $serviceName -Require
+$tenantId = $endpoint.Auth.Parameters.TenantId
 
 Write-Verbose "Input variables are: "
 Write-Verbose "resourceGroupName: $resourceGroupName"
