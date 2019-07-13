@@ -5,11 +5,11 @@
   "main": "vss-extension.json",
   "dependencies": {},
   "devDependencies": {
-    "del": "^3.0.0",
-    "gulp": "^4.0.0",
+    "del": "^5.0.0",
+    "gulp": "^4.0.2",
     "gulp-hub": "github:frankwallis/gulp-hub#4.2.0",
-    "npm": "^6.4.1",
-    "tfx-cli": "^0.6.3",
+    "npm": "^6.10.1",
+    "tfx-cli": "^0.7.8",
     "vss-web-extension-sdk": "^5.141.0"
   },
   "scripts": {
