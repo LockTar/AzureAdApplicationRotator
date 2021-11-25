@@ -38,7 +38,7 @@ function Set-AzureAdApplicationKeyRotator {
 
     #Resource Group
     Write-Verbose "Check if Resource Group '$ResourceGroupName' already exist"
-    $resourceGroup = Get-AzureRmResourceGroup -Name $ResourceGroupName -Location $Location -ErrorAction SilentlyContinue
+    $resourceGroup = Get-AzResourceGroup -Name $ResourceGroupName -Location $Location -ErrorAction SilentlyContinue
 
     if (!$resourceGroup) {
         Write-Error "Resource Group with the name '$ResourceGroupName' doesn't exist. First create a Resource Group"
@@ -46,7 +46,7 @@ function Set-AzureAdApplicationKeyRotator {
 
     #KeyVault
     Write-Verbose "Check if Key Vault '$KeyVaultName' already exist"
-    $keyVault = Get-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
+    $keyVault = Get-AzKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
     if (!$keyVault) {
         Write-Error "Key Vault '$KeyVaultName' doesn't exist. First create a Key Vault."
     }
@@ -79,11 +79,11 @@ function Set-AzureAdApplicationKeyRotator {
     }
     else {
         Write-Verbose "Create Application Insights is false so check if Application Insights '$applicationInsightsName' already exist"
-        $applicationInsights = Get-AzureRmApplicationInsights -Name $applicationInsightsName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
+        $applicationInsights = Get-AzApplicationInsights -Name $applicationInsightsName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
         
         if ($applicationInsights) {
             Write-Information "Application Insights '$applicationInsightsName' exists so remove it"
-            Remove-AzureRmApplicationInsights -ResourceGroupName $ResourceGroupName -Name $applicationInsightsName
+            Remove-AzApplicationInsights -ResourceGroupName $ResourceGroupName -Name $applicationInsightsName
         }
         else {
             Write-Information "Application Insights '$applicationInsightsName' doesn't exist so do nothing"
@@ -128,11 +128,11 @@ function Set-AzureAdApplicationKeyRotator {
 
     # Get ARM output variables
     Write-Information "Retrieve Function App MSI SP from ARM output"
-    $functionAppSpId = (Get-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name $functionAppDeploymentName).Outputs.functionAppSpId.value
+    $functionAppSpId = (Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name $functionAppDeploymentName).Outputs.functionAppSpId.value
     Write-Verbose "functionAppSpId: $functionAppSpId"
 
     Write-Information "Retrieve Function App name ARM output"
-    $functionAppName = (Get-AzureRmResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name $functionAppDeploymentName).Outputs.functionAppName.value
+    $functionAppName = (Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name $functionAppDeploymentName).Outputs.functionAppName.value
     Write-Verbose "functionAppName: $functionAppName"
 
     # Publish Azure AD Application Key Rotator from the artifacts folder
@@ -145,7 +145,7 @@ function Set-AzureAdApplicationKeyRotator {
 
     # KeyVault Access Policy
     Write-Information "Set access policy for Function App Service Principal Id"
-    Set-AzureRmKeyVaultAccessPolicy `
+    Set-AzKeyVaultAccessPolicy `
         -VaultName $KeyVaultName `
         -ObjectId $functionAppSpId `
         -PermissionsToSecrets Get, List, Set
