@@ -5,23 +5,40 @@ $resourceGroupName = Get-VstsInput -Name resourceGroupName -Require
 $location = Get-VstsInput -Name location -Require
 $keyVaultName = Get-VstsInput -Name keyVaultName -Require
 
-# Initialize Azure Connection
-Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers\VstsAzureHelpers.psm1
-Initialize-PackageProvider
-Initialize-Module -Name "AzureRM.Resources" -RequiredVersion "6.7.0"
-Initialize-AzureRM
 
-Write-Verbose "Input variables are: "
-Write-Verbose "resourceGroupName: $resourceGroupName"
-Write-Verbose "keyVaultName: $keyVaultName"
-Write-Verbose "location: $location"
+# Cleanup hosted agent with AzureRM modules
+. "$PSScriptRoot\Utility.ps1"
+CleanUp-PSModulePathForHostedAgent
 
-Import-Module $PSScriptRoot\scripts\Remove-AzureAdApplicationKeyRotator.psm1
+# Initialize Azure helpers
+Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
+Import-Module $PSScriptRoot\ps_modules\CustomAzureDevOpsAzureHelpers\CustomAzureDevOpsAzureHelpers.psm1
 
-Remove-AzureAdApplicationKeyRotator `
-    -ResourceGroupName $resourceGroupName `
-    -KeyVaultName $keyVaultName `
-    -Location $location `
-    -InformationAction Continue
+try 
+{
+    # Login
+    Initialize-PackageProvider
+    Initialize-Module -Name "Az.Accounts" -RequiredVersion "2.6.0"
+    Initialize-Module -Name "Az.Resources" -RequiredVersion "4.4.0"
 
-Trace-VstsLeavingInvocation $MyInvocation
+    $connectedServiceName = Get-VstsInput -Name ConnectedServiceNameARM -Require
+    $endpoint = Get-VstsEndpoint -Name $connectedServiceName -Require
+    Initialize-AzModule -Endpoint $endpoint
+
+    Write-Verbose "Input variables are: "
+    Write-Verbose "resourceGroupName: $resourceGroupName"
+    Write-Verbose "keyVaultName: $keyVaultName"
+    Write-Verbose "location: $location"
+
+    Import-Module $PSScriptRoot\scripts\Remove-AzureAdApplicationKeyRotator.psm1
+
+    Remove-AzureAdApplicationKeyRotator `
+        -ResourceGroupName $resourceGroupName `
+        -KeyVaultName $keyVaultName `
+        -Location $location `
+        -InformationAction Continue
+}
+finally {
+    Remove-EndpointSecrets
+    Disconnect-AzureAndClearContext -ErrorAction SilentlyContinue
+}
