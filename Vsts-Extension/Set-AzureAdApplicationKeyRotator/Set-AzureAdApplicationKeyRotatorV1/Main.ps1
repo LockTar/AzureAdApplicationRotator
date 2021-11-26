@@ -9,38 +9,57 @@ $defaultKeyName = Get-VstsInput -Name defaultKeyName -Require
 $keyDurationInMinutes = Get-VstsInput -Name keyDurationInMinutes -Require -AsInt
 $createApplicationInsights = Get-VstsInput -Name createApplicationInsights -AsBool
 
-# Initialize Azure Connection
-Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers\VstsAzureHelpers.psm1
-Initialize-PackageProvider
-Initialize-Module -Name "AzureRM.Resources" -RequiredVersion "6.7.0"
-Initialize-AzureRM
+# Cleanup hosted agent with AzureRM modules
+. "$PSScriptRoot\Utility.ps1"
+CleanUp-PSModulePathForHostedAgent
 
-# Get tenantid out of the AzureRM connection
-$serviceName = Get-VstsInput -Name ConnectedServiceNameARM -Require
-$endpoint = Get-VstsEndpoint -Name $serviceName -Require
-$tenantId = $endpoint.Auth.Parameters.TenantId
+# Initialize Azure helpers
+Import-Module $PSScriptRoot\ps_modules\VstsAzureHelpers_
+Import-Module $PSScriptRoot\ps_modules\CustomAzureDevOpsAzureHelpers\CustomAzureDevOpsAzureHelpers.psm1
 
-Write-Verbose "Input variables are: "
-Write-Verbose "resourceGroupName: $resourceGroupName"
-Write-Verbose "keyVaultName: $keyVaultName"
-Write-Verbose "location: $location"
-Write-Verbose "schedule: $schedule"
-Write-Verbose "defaultKeyName: $defaultKeyName"
-Write-Verbose "keyDurationInMinutes: $keyDurationInMinutes"
-Write-Verbose "createApplicationInsights: $createApplicationInsights"
-Write-Verbose "tenantId: $tenantId"
+try 
+{
+    # Login
+    Initialize-PackageProvider
+    Initialize-Module -Name "Az.Accounts" -RequiredVersion "2.6.0"
+    Initialize-Module -Name "Az.Resources" -RequiredVersion "4.4.0"
 
-Import-Module $PSScriptRoot\scripts\Set-AzureAdApplicationKeyRotator.psm1
+    $connectedServiceName = Get-VstsInput -Name ConnectedServiceNameARM -Require
+    $endpoint = Get-VstsEndpoint -Name $connectedServiceName -Require
+    Initialize-AzModule -Endpoint $endpoint
 
-Set-AzureAdApplicationKeyRotator `
-    -ResourceGroupName $resourceGroupName `
-    -KeyVaultName $keyVaultName `
-    -Location $location `
-    -Schedule $schedule `
-    -DefaultKeyName $DefaultKeyName `
-    -KeyDurationInMinutes $KeyDurationInMinutes `
-    -CreateApplicationInsights $createApplicationInsights `
-    -TenantId $tenantId `
-    -InformationAction Continue
 
-Trace-VstsLeavingInvocation $MyInvocation
+    # Get tenantid out of the AzureRM connection
+    $serviceName = Get-VstsInput -Name ConnectedServiceNameARM -Require
+    $endpoint = Get-VstsEndpoint -Name $serviceName -Require
+    $tenantId = $endpoint.Auth.Parameters.TenantId
+
+    Write-Verbose "Input variables are: "
+    Write-Verbose "resourceGroupName: $resourceGroupName"
+    Write-Verbose "keyVaultName: $keyVaultName"
+    Write-Verbose "location: $location"
+    Write-Verbose "schedule: $schedule"
+    Write-Verbose "defaultKeyName: $defaultKeyName"
+    Write-Verbose "keyDurationInMinutes: $keyDurationInMinutes"
+    Write-Verbose "createApplicationInsights: $createApplicationInsights"
+    Write-Verbose "tenantId: $tenantId"
+
+    Import-Module $PSScriptRoot\scripts\Set-AzureAdApplicationKeyRotator.psm1
+
+    Set-AzureAdApplicationKeyRotator `
+        -ResourceGroupName $resourceGroupName `
+        -KeyVaultName $keyVaultName `
+        -Location $location `
+        -Schedule $schedule `
+        -DefaultKeyName $DefaultKeyName `
+        -KeyDurationInMinutes $KeyDurationInMinutes `
+        -CreateApplicationInsights $createApplicationInsights `
+        -TenantId $tenantId `
+        -InformationAction Continue   
+}
+finally {
+    Remove-EndpointSecrets
+    Disconnect-AzureAndClearContext -ErrorAction SilentlyContinue
+
+    Trace-VstsLeavingInvocation $MyInvocation
+}

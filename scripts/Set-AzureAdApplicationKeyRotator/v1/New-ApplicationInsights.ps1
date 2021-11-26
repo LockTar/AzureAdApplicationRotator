@@ -23,7 +23,7 @@ function New-ApplicationInsights {
     # Deploy with ARM
     Write-Verbose "Deploy ARM template with deploymentname $DeploymentName"
 
-    New-AzureRmResourceGroupDeployment -Name $DeploymentName `
+    New-AzResourceGroupDeployment -Name $DeploymentName `
         -ResourceGroupName $ResourceGroupName `
         -TemplateFile $TemplateFile `
         -TemplateParameterObject $parametersARM `

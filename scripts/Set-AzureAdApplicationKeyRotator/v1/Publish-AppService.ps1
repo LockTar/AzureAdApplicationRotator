@@ -16,7 +16,7 @@ function Publish-AppService {
 
     Write-Verbose "Getting publishing profile of App Service"
     $publishProfilePath = Join-Path -Path $ENV:Temp -ChildPath "publishprofile.xml"
-    $null = Get-AzureRmWebAppPublishingProfile `
+    $null = Get-AzWebAppPublishingProfile `
         -OutputFile $publishProfilePath `
         -Format WebDeploy `
         -ResourceGroupName $ResourceGroupName `
@@ -24,7 +24,7 @@ function Publish-AppService {
 
     # Stop the web app to make sure deployment is possible.
     Write-Verbose "Stopping App Service so we can safely deploy"
-    $null = Stop-AzureRmWebApp `
+    $null = Stop-AzWebApp `
         -ResourceGroupName $ResourceGroupName `
         -Name $AppServiceName 
 
@@ -50,7 +50,7 @@ function Publish-AppService {
     }
     finally {
         Write-Verbose "Start the App Service"
-        $null = Start-AzureRmWebApp `
+        $null = Start-AzWebApp `
             -ResourceGroupName $ResourceGroupName `
             -Name $AppServiceName
     }

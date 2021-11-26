@@ -39,11 +39,11 @@ For in example letting users login into a web application with his or her AD acc
     $resourceGroupName = "$(ResourceGroupName)"
     $location = "$(Location)"
     Write-Verbose "Get Resource Group '$resourceGroupName'"
-    $resourceGroup = Get-AzureRmResourceGroup -Name $resourceGroupName -Location $location -ErrorAction SilentlyContinue
+    $resourceGroup = Get-AzResourceGroup -Name $resourceGroupName -Location $location -ErrorAction SilentlyContinue
 
     if (!$resourceGroup) {
        Write-Information "Create Resource Group '$resourceGroupName'"
-       New-AzureRmResourceGroup -Name $resourceGroupName -Location $location
+       New-AzResourceGroup -Name $resourceGroupName -Location $location
 
        Write-Verbose "Give azure some time to create Resource Group"
        Start-Sleep 10
@@ -55,9 +55,9 @@ For in example letting users login into a web application with his or her AD acc
     $keyVaultName = "$(KeyVaultName)"
     $location = "$(Location)"
 
-    $keyVault = Get-AzureRmKeyVault -VaultName $keyVaultName -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue
+    $keyVault = Get-AzKeyVault -VaultName $keyVaultName -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue
     if (!$keyVault) {
-        New-AzureRmKeyVault -Name $keyVaultName  -Location $location -ResourceGroupName $resourceGroupName
+        New-AzKeyVault -Name $keyVaultName  -Location $location -ResourceGroupName $resourceGroupName
 
         Write-Verbose "Give azure some time to create Resource Group"
         Start-Sleep 10
@@ -71,7 +71,7 @@ For in example letting users login into a web application with his or her AD acc
     Write-Information "Add a placeholder secret so we can rotate keys for a specific application"
     $tags = @{ApplicationObjectId = "PASTE OBJECTID (NOT APPLICATIONID) OF YOUR APPLICATION THAT NEEDS ROTATION HERE"}
     $secretValue = ConvertTo-SecureString -String 'Foo' -AsPlainText -Force
-    Set-AzureKeyVaultSecret -VaultName $keyVaultName -Name 'YOUR SECRET NAME THAT YOU USE IN YOUR CODE OF YOUR BUSINESS APPLICATION' -SecretValue $secretValue -Tag $tags
+    Set-AzKeyVaultSecret -VaultName $keyVaultName -Name 'YOUR SECRET NAME THAT YOU USE IN YOUR CODE OF YOUR BUSINESS APPLICATION' -SecretValue $secretValue -Tag $tags
     ```
     You can add multiple secrets in your KeyVault for multiple applications.
 15. Use the 'Set Azure AD Application Key Rotator' task after the Key Vault and the placeholder secret creation task in your Release Pipeline.
@@ -82,8 +82,8 @@ For in example letting users login into a web application with his or her AD acc
 2. Get the Service Principal Object Id of the function (MSI).
     ```powershell
     # Get MSI of rotator function app
-    Get-AzureRmADServicePrincipal -SearchString $functionAppName | Where-Object { $_.DisplayName -eq $functionAppName }
-    $rotatorAppSpId = $(Get-AzureRmADServicePrincipal -SearchString $functionAppName | Where-Object { $_.DisplayName -eq $functionAppName }).Id
+    Get-AzADServicePrincipal -SearchString $functionAppName | Where-Object { $_.DisplayName -eq $functionAppName }
+    $rotatorAppSpId = $(Get-AzADServicePrincipal -SearchString $functionAppName | Where-Object { $_.DisplayName -eq $functionAppName }).Id
     ```
 3. Create a new Azure AD Application (App Registration) or use an existing in your tenant that needs rotation. You will get an `applicationId` and a `ObjectId` for this. You can see this in the Azure portal.
 4. Set the rotator service principal (MSI) as owner of that application. See [How to set correct AD permissions of MSI](#How-to-set-correct-AD-permissions-of-MSI) for more information.
@@ -93,14 +93,14 @@ For in example letting users login into a web application with his or her AD acc
     Write-Information "Add a placeholder secret so we can rotate keys for a specific application"
     $tags = @{ApplicationObjectId = "PASTE OBJECTID (NOT APPLICATIONID) OF YOUR APPLICATION THAT NEEDS ROTATION HERE"}
     $secretValue = ConvertTo-SecureString -String 'Foo' -AsPlainText -Force
-    Set-AzureKeyVaultSecret -VaultName $keyVaultName -Name 'YOUR SECRET NAME THAT YOU USE IN YOUR CODE OF YOUR BUSINESS APPLICATION' -SecretValue $secretValue -Tag $tags
+    Set-AzKeyVaultSecret -VaultName $keyVaultName -Name 'YOUR SECRET NAME THAT YOU USE IN YOUR CODE OF YOUR BUSINESS APPLICATION' -SecretValue $secretValue -Tag $tags
     ```
     You can add multiple secrets in your KeyVault for multiple applications.
 6. Make sure that the rotator function has the right Access Policy on the KeyVault. You can set that with the following PowerShell:
 
     ```powershell
     Write-Information "Set access policy for Application Key Rotator Function App Service Principal Id"
-    Set-AzureRmKeyVaultAccessPolicy `
+    Set-AzKeyVaultAccessPolicy `
       -VaultName $keyVaultName `
       -ObjectId $rotatorAppSpId `
       -PermissionsToSecrets Get,Set
@@ -184,14 +184,14 @@ Next to this, the MSI must be **Owner** of the app registration from which you w
 
 ```powershell
 Connect-AzureAD
-Connect-AzureRmAccount
+Connect-AzAccount
 
 $msiObjectId = "YOUR MSI OBJECT ID HERE"
 # Get application that needs key rotation
 $appObjectIdThatNeedsRotation = "PASTE OBJECTID (NOT APPLICATIONID) OF YOUR APPLICATION THAT NEEDS ROTATION HERE"
 
-Get-AzureRmADApplication -ObjectId $appObjectIdThatNeedsRotation
-Get-AzureRmADApplication -ObjectId $appObjectIdThatNeedsRotation | Get-AzureRmADServicePrincipal
+Get-AzADApplication -ObjectId $appObjectIdThatNeedsRotation
+Get-AzADApplication -ObjectId $appObjectIdThatNeedsRotation | Get-AzADServicePrincipal
 
 # Add MSI as owner of the application
 Add-AzureADApplicationOwner -ObjectId $appObjectIdThatNeedsRotation -RefObjectId $msiObjectId
