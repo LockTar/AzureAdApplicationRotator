@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "An Azure DevOps extension with Azure Pipelines tasks to manage Azure AD Applications keys by rotating them.",
   "main": "vss-extension.json",
-  "dependencies": {},
   "devDependencies": {
     "del": "^6.0.0",
     "gulp": "^4.0.2",
     "gulp-hub": "github:frankwallis/gulp-hub#4.2.0",
-    "npm": "^7.24.2",
+    "npm": "^8.1.4",
     "tfx-cli": "^0.9.2",
     "vss-web-extension-sdk": "^5.141.0"
   },
