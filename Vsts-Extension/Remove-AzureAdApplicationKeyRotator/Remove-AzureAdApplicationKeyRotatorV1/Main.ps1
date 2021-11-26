@@ -21,6 +21,9 @@ try
     Initialize-Module -Name "Az.Accounts" -RequiredVersion "2.6.0"
     Initialize-Module -Name "Az.Resources" -RequiredVersion "4.4.0"
     Initialize-Module -Name "Az.KeyVault" -RequiredVersion "3.6.0"
+    Initialize-Module -Name "Az.Websites" -RequiredVersion "2.8.3"
+    Initialize-Module -Name "Az.ApplicationInsights" -RequiredVersion "1.2.0"
+    Initialize-Module -Name "Az.Storage" -RequiredVersion "3.12.0"
 
     $connectedServiceName = Get-VstsInput -Name ConnectedServiceNameARM -Require
     $endpoint = Get-VstsEndpoint -Name $connectedServiceName -Require
