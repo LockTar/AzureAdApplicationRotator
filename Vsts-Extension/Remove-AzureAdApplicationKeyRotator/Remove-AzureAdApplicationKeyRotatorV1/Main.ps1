@@ -20,6 +20,7 @@ try
     Initialize-PackageProvider
     Initialize-Module -Name "Az.Accounts" -RequiredVersion "2.6.0"
     Initialize-Module -Name "Az.Resources" -RequiredVersion "4.4.0"
+    Initialize-Module -Name "Az.KeyVault" -RequiredVersion "3.6.0"
 
     $connectedServiceName = Get-VstsInput -Name ConnectedServiceNameARM -Require
     $endpoint = Get-VstsEndpoint -Name $connectedServiceName -Require
