@@ -1,6 +1,6 @@
-# Private module-scope variables.
-$script:azureModule = $null
-$script:azureRMProfileModule = $null
+# # Private module-scope variables.
+# $script:azureModule = $null
+# $script:azureRMProfileModule = $null
 
 function Set-AzureAdApplicationKeyRotator {
     [CmdletBinding()]
@@ -135,20 +135,20 @@ function Set-AzureAdApplicationKeyRotator {
     $functionAppName = (Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name $functionAppDeploymentName).Outputs.functionAppName.value
     Write-Verbose "functionAppName: $functionAppName"
 
-    # Publish Azure AD Application Key Rotator from the artifacts folder
-    Write-Information "Publish the Application Key Rotator to the Function App"
-    $zipFilePath = Join-Path -Path $PSScriptRoot -ChildPath ".\Artifacts\ApplicationKeyRotator.zip"
-    Publish-AppService `
-        -ResourceGroupName $ResourceGroupName `
-        -ZipFilePath $zipFilePath `
-        -AppServiceName $functionAppName
-
     # KeyVault Access Policy
     Write-Information "Set access policy for Function App Service Principal Id"
     Set-AzKeyVaultAccessPolicy `
         -VaultName $KeyVaultName `
         -ObjectId $functionAppSpId `
         -PermissionsToSecrets Get, List, Set
+
+    # Publish Azure AD Application Key Rotator from the artifacts folder
+    Write-Information "Publish the Application Key Rotator to the Function App"
+    $zipFilePath = Join-Path -Path $PSScriptRoot -ChildPath ".\Artifacts\ApplicationKeyRotator.zip"
+    Publish-AppService `
+        -ResourceGroupName $ResourceGroupName `
+        -ZipFilePath $zipFilePath `
+        -AppServiceName $functionAppName   
 }
 
 Export-ModuleMember -Function Set-AzureAdApplicationKeyRotator

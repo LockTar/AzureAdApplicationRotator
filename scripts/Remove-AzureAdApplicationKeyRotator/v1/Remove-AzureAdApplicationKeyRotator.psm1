@@ -1,6 +1,6 @@
-# Private module-scope variables.
-$script:azureModule = $null
-$script:azureRMProfileModule = $null
+# # Private module-scope variables.
+# $script:azureModule = $null
+# $script:azureRMProfileModule = $null
 
 function Remove-AzureAdApplicationKeyRotator {
     [CmdletBinding()]

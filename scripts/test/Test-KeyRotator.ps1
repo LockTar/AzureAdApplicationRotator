@@ -26,11 +26,11 @@ try {
 
     # Resource Group error test
     Write-Verbose "Get Resource Group '$resourceGroupName'"
-    $resourceGroup = Get-AzureRmResourceGroup -Name $resourceGroupName -Location $location -ErrorAction SilentlyContinue
+    $resourceGroup = Get-AzResourceGroup -Name $resourceGroupName -Location $location -ErrorAction SilentlyContinue
 
     if (!$resourceGroup) {
         Write-Information "Create Resource Group '$resourceGroupName'"
-        New-AzureRmResourceGroup -Name $resourceGroupName -Location $location
+        New-AzResourceGroup -Name $resourceGroupName -Location $location
 
         Write-Verbose "Give azure some time to create Resource Group"
         Start-Sleep 10
@@ -39,7 +39,7 @@ try {
     
     # KeyVault error test
     Write-Verbose "Get Key Vault '$keyVaultName'"
-    $keyVault = Get-AzureRmKeyVault -VaultName $keyVaultName -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue
+    $keyVault = Get-AzKeyVault -VaultName $keyVaultName -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue
 
     if (!$keyVault) {
         Write-Information "Create Key Vault '$keyVaultName'"
@@ -59,6 +59,7 @@ try {
     
         
     # Set Rotator
+    Write-Verbose "Set the key rotator"
     Set-AzureAdApplicationKeyRotator `
         -ResourceGroupName $resourceGroupName `
         -KeyVaultName $keyVaultName `
@@ -74,16 +75,16 @@ try {
 
     # Add access policy for current user
     Write-Information "Set access policy for current user to set test secret"
-    Set-AzureRmKeyVaultAccessPolicy `
+    Set-AzKeyVaultAccessPolicy `
         -VaultName $keyVaultName `
-        -ObjectId $(Get-AzureRmADUser -UserPrincipalName $(Get-AzureRmContext).Account.Id).Id `
+        -ObjectId $(Get-AzADUser -UserPrincipalName $(Get-AzContext).Account.Id).Id `
         -PermissionsToSecrets Get, List, Set
 
     # Add a test secret
     Write-Information "Add a test secret so we can test the rotation"
     $tags = @{ApplicationObjectId = "83d86c42-6567-49e0-ab8c-e40848205883"}
     $secretValue = ConvertTo-SecureString -String 'Bar' -AsPlainText -Force
-    Set-AzureKeyVaultSecret -VaultName $keyVaultName -Name 'Foo' -SecretValue $secretValue -Tag $tags
+    Set-AzKeyVaultSecret -VaultName $keyVaultName -Name 'Foo' -SecretValue $secretValue -Tag $tags
 }
 finally {
     Remove-Module Set-AzureAdApplicationKeyRotator
@@ -101,7 +102,7 @@ if ($removeAllAfterCreate) {
             -InformationAction Continue
 
         Write-Information "Remove Resource Group '$resourceGroupName'"
-        Remove-AzureRmResourceGroup -Name $resourceGroupName -Force
+        Remove-AzResourceGroup -Name $resourceGroupName -Force
     }
     finally {
         Remove-Module Remove-AzureAdApplicationKeyRotator
