@@ -20,6 +20,9 @@
                 "description": "Application Insight Name"
             }
         },
+        "keyVaultName": {
+            "type": "string"
+        },
         "schedule": {
             "type": "string"
         },
@@ -103,7 +106,7 @@
                     },
                     {
                         "name": "KeyVaultUrl",
-                        "value": "https://appkeyrotatortest.vault.azure.net/"
+                        "value": "[concat('https://', parameters('keyVaultName'), '.vault.azure.net/')]"
                     },
                     {
                         "name": "Schedule",

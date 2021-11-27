@@ -115,6 +115,7 @@ function Set-AzureAdApplicationKeyRotator {
         -Location $Location `
         -StorageAccountName $storageAccountName `
         -AppServicePlanName $appServicePlanName `
+        -KeyVaultName $KeyVaultName `
         -Schedule $Schedule `
         -DefaultKeyName $DefaultKeyName `
         -KeyDurationInMinutes $KeyDurationInMinutes `

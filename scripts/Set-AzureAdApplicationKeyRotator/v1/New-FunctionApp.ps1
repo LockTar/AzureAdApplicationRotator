@@ -12,6 +12,8 @@ function New-FunctionApp {
         [Parameter(Mandatory=$true)]
         [string]$AppServicePlanName,
         [Parameter(Mandatory=$true)]
+        [string]$KeyVaultName,
+        [Parameter(Mandatory=$true)]
         [string]$Schedule,
         [Parameter(Mandatory=$true)]
         [string]$DefaultKeyName,
@@ -35,6 +37,7 @@ function New-FunctionApp {
     $parametersARM.Add("location", $Location)
     $parametersARM.Add("storageAccountName", $StorageAccountName)
     $parametersARM.Add("appServicePlanName", $AppServicePlanName)
+    $parametersARM.Add("keyVaultName", $KeyVaultName)
     $parametersARM.Add("schedule", $Schedule)
     $parametersARM.Add("defaultKeyName", $DefaultKeyName)
     $parametersARM.Add("keyDurationInMinutes", $KeyDurationInMinutes)
